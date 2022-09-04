@@ -18,6 +18,7 @@ class ParticleShader : BaseShader(VERTEX_SHADER, FRAGMENT_SHADER) {
         bindAttribute(2, TYPE_ATTRIBUTE)
         bindAttribute(3, COLOR_ATTRIBUTE)
         bindAttribute(4, LAYER_ATTRIBUTE)
+        bindAttribute(5, CENTERED_ATTRIBUTE)
     }
 
     override fun bind() {
@@ -47,6 +48,7 @@ class ParticleShader : BaseShader(VERTEX_SHADER, FRAGMENT_SHADER) {
         private const val TYPE_ATTRIBUTE = "in_type"
         private const val COLOR_ATTRIBUTE = "in_color"
         private const val LAYER_ATTRIBUTE = "in_layer"
+        private const val CENTERED_ATTRIBUTE = "in_centered"
 
         private const val PROJECTION_MATRIX_UNIFORM = "in_projectionMatrix"
     }

@@ -53,7 +53,7 @@ class SpriteBatch(
             return true
         }
 
-        val quad = getQuad()
+        val quad = getQuad(transform.centered)
         addAttributeData(
             POSITION_INDEX,
             quad.tl.x, quad.tl.y,

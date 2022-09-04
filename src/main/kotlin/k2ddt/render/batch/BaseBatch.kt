@@ -53,12 +53,13 @@ abstract class BaseBatch(
         glBindVertexArray(0)
     }
 
-    protected fun getQuad(): Quad {
+    protected fun getQuad(centered: Boolean): Quad {
+        val off = if(centered) 0.5f else 0f
         return Quad(
-            Vector2f(0f, 1f),
-            Vector2f(0f, 0f),
-            Vector2f(1f, 0f),
-            Vector2f(1f, 1f)
+            Vector2f(0f - off, 1f - off),
+            Vector2f(0f - off, 0f - off),
+            Vector2f(1f - off, 0f - off),
+            Vector2f(1f - off, 1f - off)
         )
     }
 

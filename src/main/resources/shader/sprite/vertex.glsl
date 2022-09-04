@@ -5,13 +5,13 @@ layout (location=1) in vec2 in_translation;
 layout (location=2) in float in_rotation;
 layout (location=3) in vec2 in_scale;
 layout (location=4) in vec2 in_textureCoords;
-layout (location=5) in int in_textureIndex;
-layout (location=6) in int in_layer;
+layout (location=5) in uint in_textureIndex;
+layout (location=6) in uint in_layer;
 
 uniform mat4 in_projectionMatrix;
 
 out vec2 textureCoords;
-flat out int textureIndex;
+flat out uint textureIndex;
 
 vec2 translate(vec2 v, vec2 t) {
     return v + t;

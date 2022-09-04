@@ -16,7 +16,7 @@ class RandomShape(
     private val layer: Int
 ) {
 
-    private val speed = 1000f
+    private val speed = 250f
     private var direction = if (Random().nextInt(2) == 0) -1 else 1
     private val transform = Transform(
         positionX,
@@ -24,13 +24,16 @@ class RandomShape(
         0f,
         size,
         size,
-        layer
+        layer,
+        true
     )
     private val shape = Shape(Shape.Type.CIRCLE, color)
 
     fun tick(updateContext: UpdateContext) {
         transform.translate(speed * updateContext.elapsedTime * direction, 0f)
-        if (transform.position.x + size >= 1280f || transform.position.x <= 0f) {
+        transform.rotation += 0.05f
+
+        if (transform.position.x <= 0f || transform.position.x >= 1280f) {
             direction *= -1
         }
     }

@@ -2,11 +2,14 @@
 
 flat in int type;
 in vec4 color;
+flat in uint centered;
 
 out vec4 out_color;
 
 void process_circle() {
-    vec2 temp = gl_PointCoord - vec2(0.5);
+    vec2 temp = gl_PointCoord;
+    if(centered == 0){ temp -= vec2(0.5); }
+
     float f = dot(temp, temp);
     if (f>0.25) discard;
 }

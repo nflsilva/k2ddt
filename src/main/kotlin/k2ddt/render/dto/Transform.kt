@@ -11,14 +11,16 @@ import org.joml.Vector2f
  * @param rotation the 2D rotation value.
  * @param scale the 2D scale value.
  * @param layer the drawing layer value [0-999]. 0 is the top, 999 is the bottom.
+ * @param centered if set, entity will be drawn centered on position.
  * @throws IllegalArgumentException if drawing layer is outside expected values.
  *
  */
-data class Transform(
+class Transform(
     var position: Vector2f,
     var rotation: Float,
     var scale: Vector2f,
-    var layer: Int
+    var layer: Int,
+    var centered: Boolean = false
 ) {
 
     /**
@@ -30,6 +32,7 @@ data class Transform(
      * @param scaleX the X axis scale on the screen.
      * @param scaleY the Y axis scale on the screen.
      * @param layer the drawing layer value [0-999]. 0 is the top, 999 is the bottom.
+     * @param centered if set, entity will be drawn centered on position.
      * @throws IllegalArgumentException if drawing layer is outside expected values.
      *
      */
@@ -39,11 +42,12 @@ data class Transform(
         rotation: Float,
         scaleX: Float,
         scaleY: Float,
-        layer: Int
-    ) : this(Vector2f(positionX, positionY), rotation, Vector2f(scaleX, scaleY), layer)
+        layer: Int,
+        centered: Boolean = false
+    ) : this(Vector2f(positionX, positionY), rotation, Vector2f(scaleX, scaleY), layer, centered)
 
     init {
-        if(layer < 0 || layer > 999) {
+        if (layer < 0 || layer > 999) {
             throw IllegalArgumentException("Layer should be between 0 and 999")
         }
     }

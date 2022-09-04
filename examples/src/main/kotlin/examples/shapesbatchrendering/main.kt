@@ -38,7 +38,7 @@ private class Delegate : ExecutionDelegate() {
                     Random().nextFloat() * 720f,
                     size,
                     colors[i % colors.size],
-                    0
+                    800
                 )
             )
         }
@@ -65,7 +65,7 @@ private class Delegate : ExecutionDelegate() {
                 45f,
                 90f,
                 colors[4],
-                1
+                3
             )
         )
     }
@@ -89,14 +89,16 @@ private class Delegate : ExecutionDelegate() {
 
         shapes.forEach { it.draw(executionContext) }
 
-        for(i in 1 until 5) {
+        val size = 128f * 2
+        for(i in 0 until 5) {
             val t0 = Transform(
-                i * 128f,
-                i * 128f,
+                i * size,
+                i * size,
                 0f,
-                128f,
-                128f,
-                1 + i)
+                size,
+                size,
+                2 + i,
+                true)
             executionContext.render(sprite, t0, Color(1f), 0.5f)
         }
 

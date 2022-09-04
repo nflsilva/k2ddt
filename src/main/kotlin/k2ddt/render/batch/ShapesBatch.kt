@@ -15,6 +15,7 @@ class ShapesBatch(maxShapes: Int) :
         const val TYPE_INDEX = 4
         const val COLOR_INDEX = 5
         const val LAYER_INDEX = 6
+        const val CENTERED_INDEX = 7
     }
 
     init {
@@ -25,11 +26,12 @@ class ShapesBatch(maxShapes: Int) :
         addIntAttributeBuffer(TYPE_INDEX, 1)
         addFloatAttributeBuffer(COLOR_INDEX, 4)
         addIntAttributeBuffer(LAYER_INDEX, 1)
+        addIntAttributeBuffer(CENTERED_INDEX, 1)
     }
 
     fun addShape(shape: Shape, transform: Transform) {
 
-        val quad = getQuad()
+        val quad = getQuad(transform.centered)
         addAttributeData(
             POSITION_INDEX,
             quad.tl.x, quad.tl.y,
@@ -39,12 +41,12 @@ class ShapesBatch(maxShapes: Int) :
             perVertex = false
         )
         addAttributeData(LAYER_INDEX, transform.layer)
-
         addAttributeData(TRANSLATION_INDEX, transform.position.x, transform.position.y)
         addAttributeData(ROTATION_INDEX, transform.rotation)
         addAttributeData(SCALE_INDEX, transform.scale.x, transform.scale.y)
         addAttributeData(TYPE_INDEX, shape.type.value)
         addAttributeData(COLOR_INDEX, shape.color.r, shape.color.g, shape.color.b, shape.color.a)
+        addAttributeData(CENTERED_INDEX, if(transform.centered) 1 else 0)
 
         val indexOffset = nEntities * 4
         addIndexData(

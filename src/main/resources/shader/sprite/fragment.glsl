@@ -1,7 +1,7 @@
 #version 410 core
 
 in vec2 textureCoords;
-flat in int textureIndex;
+flat in uint textureIndex;
 
 uniform sampler2D in_samplers[100];
 

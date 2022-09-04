@@ -12,6 +12,7 @@ class ParticlesBatch(maxEntities: Int) :
         const val TYPE_INDEX = 2
         const val COLOR_INDEX = 3
         const val LAYER_INDEX = 4
+        const val CENTERED_INDEX = 5
     }
 
     init {
@@ -20,6 +21,7 @@ class ParticlesBatch(maxEntities: Int) :
         addIntAttributeBuffer(TYPE_INDEX, 1)
         addFloatAttributeBuffer(COLOR_INDEX, 4)
         addIntAttributeBuffer(LAYER_INDEX, 1)
+        addIntAttributeBuffer(CENTERED_INDEX, 1)
     }
 
     fun addParticle(particle: Particle, transform: Transform) {
@@ -32,6 +34,7 @@ class ParticlesBatch(maxEntities: Int) :
         addAttributeData(SIZE_INDEX, particle.size)
         addAttributeData(TYPE_INDEX, particle.type.value)
         addAttributeData(COLOR_INDEX, particle.color.r, particle.color.g, particle.color.b, particle.color.a)
+        addAttributeData(CENTERED_INDEX, if(transform.centered) 1 else 0)
         addIndexData(nEntities)
         nEntities += 1
     }
