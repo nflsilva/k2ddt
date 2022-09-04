@@ -22,11 +22,11 @@ class RandomShape(
         positionX,
         positionY,
         0f,
-        1f,
-        1f,
+        size,
+        size,
         layer
     )
-    private val shape = Particle(Particle.Type.CIRCLE, size, color)
+    private val shape = Shape(Shape.Type.CIRCLE, color)
 
     fun tick(updateContext: UpdateContext) {
         transform.translate(speed * updateContext.elapsedTime * direction, 0f)
@@ -36,7 +36,7 @@ class RandomShape(
     }
 
     fun draw(context: ExecutionContext) {
-        context.renderParticle(shape, transform)
+        context.render(shape, transform)
     }
 
 }

@@ -4,12 +4,16 @@ import k2ddt.core.ExecutionContext
 import k2ddt.core.ExecutionDelegate
 import k2ddt.core.dto.UpdateContext
 import k2ddt.render.dto.Color
+import k2ddt.render.dto.Sprite
+import k2ddt.render.dto.Text
+import k2ddt.render.dto.Transform
+import k2ddt.render.font.DefaultFont
+import k2ddt.render.model.BitmapFont
 import org.joml.Random
 
 private class Delegate : ExecutionDelegate() {
 
     private var shapes: MutableList<RandomShape> = mutableListOf()
-    private var done = false
     private val colors = listOf(
         Color(1f, 0f, 0f, 1f),
         Color(0f, 1f, 0f, 1f),
@@ -21,7 +25,10 @@ private class Delegate : ExecutionDelegate() {
         Color(1f, 1f, 1f, 1f),
     )
 
-    private fun drawStress(){
+    lateinit var sprite: Sprite
+    lateinit var font: BitmapFont
+
+    private fun setupStress(){
         val nShapes = 16e6.toInt()
         val size = 1f
         for (i in 0 until nShapes) {
@@ -36,37 +43,41 @@ private class Delegate : ExecutionDelegate() {
             )
         }
     }
-    private fun drawLimits(){
+    private fun setupLimits(){
         val nShapes = 8
         val size = 90f
         for (i in 0 until nShapes) {
             shapes.add(
                 RandomShape(
-                    0f,
+                    10f,
                     size * i,
                     size,
-                    colors[i % colors.size],
-                    1
+                    colors[i % (colors.size - 1)],
+                    2
                 )
             )
         }
     }
-    private fun drawOver(){
+    private fun setupOver(){
         shapes.add(
             RandomShape(
                 45f,
                 45f,
                 90f,
                 colors[4],
-                999
+                1
             )
         )
     }
 
     override fun onStart() {
-        //drawStress()
-        drawOver()
-        drawLimits()
+
+        //setupStress()
+        setupOver()
+        setupLimits()
+
+        sprite = Sprite("/sprite/cube.png")
+        font = DefaultFont()
 
     }
 
@@ -75,10 +86,29 @@ private class Delegate : ExecutionDelegate() {
     }
 
     override fun onFrame() {
-        if(!done) {
-            shapes.forEach { it.draw(executionContext) }
-            done = true
+
+        shapes.forEach { it.draw(executionContext) }
+
+        for(i in 1 until 5) {
+            val t0 = Transform(
+                i * 128f,
+                i * 128f,
+                0f,
+                128f,
+                128f,
+                1 + i)
+            executionContext.render(sprite, t0, Color(1f), 0.5f)
         }
+
+        val text = Text("Hello World!", font)
+        val tt = Transform(
+            300f,
+            300f,
+            0f,
+            55f,
+            5f,
+            0)
+        executionContext.render(text, tt)
 
     }
 }

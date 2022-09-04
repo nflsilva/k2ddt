@@ -51,7 +51,7 @@ class RenderEngine(private val screenWidth: Int, private val screenHeight: Int) 
         glGetIntegerv(GL30.GL_MAX_TEXTURE_IMAGE_UNITS, mtsb)
         maxTextureSlots = mtsb.get()
 
-        spriteBatches = mutableListOf()
+        spriteBatches = mutableListOf(SpriteBatch(DEFAULT_BATCH_SIZE, maxTextureSlots))
         spriteShader = SpriteShader()
 
         particleShader = ParticleShader()
@@ -73,7 +73,7 @@ class RenderEngine(private val screenWidth: Int, private val screenHeight: Int) 
         glEnable(GL_CULL_FACE)
         glCullFace(GL_BACK)
         draw()
-        //clearBatches()
+        clearBatches()
     }
 
     fun onUpdate() {
@@ -110,6 +110,17 @@ class RenderEngine(private val screenWidth: Int, private val screenHeight: Int) 
             addToSuitableSpriteBatch(multiSprite, transform)
         }
     }
+    fun render(text: Text, transform: Transform) {
+        val fullTextSprite = MultiSprite(1, text.data.length)
+        val spriteSize = Vector2f(transform.scale)
+            .div(Vector2f(fullTextSprite.columns.toFloat(), fullTextSprite.rows.toFloat()))
+
+        for(c in 0 until text.data.length){
+            val charSprite = text.font.getCharacter(text.data[c])
+            fullTextSprite.addSprite(0, c, spriteSize, charSprite)
+        }
+        render(fullTextSprite, transform)
+    }
 
     fun zoomIn(zoom: Float){
 
@@ -132,7 +143,7 @@ class RenderEngine(private val screenWidth: Int, private val screenHeight: Int) 
 
     private fun addToSuitableSpriteBatch(data: Sprite, transform: Transform) {
         val suitableBatch = spriteBatches[suitableSpriteBatch]
-        val isFull = suitableBatch.addSprite(data, transform, Vector2f(-0.5f))
+        val isFull = suitableBatch.addSprite(data, transform)
         if (isFull) {
             incrementSuitableSpriteBatch()
         }
@@ -140,7 +151,8 @@ class RenderEngine(private val screenWidth: Int, private val screenHeight: Int) 
     private fun addToSuitableSpriteBatch(data: MultiSprite, transform: Transform) {
         val suitableBatch = spriteBatches[suitableSpriteBatch]
 
-        val spriteSize = Vector2f(transform.scale).div(Vector2f(data.columns.toFloat(), data.rows.toFloat()))
+        val spriteSize = Vector2f(transform.scale)
+            .div(Vector2f(data.columns.toFloat(), data.rows.toFloat()))
 
         var currentRowY = data.rows / -2f
         for (r in 0 until data.rows) {
@@ -148,12 +160,15 @@ class RenderEngine(private val screenWidth: Int, private val screenHeight: Int) 
             for (c in 0 until data.columns) {
                 val sprite = data.getSprite(r, c) ?: continue
                 val t = Transform(
-                    Vector2f(transform.position),
+                    Vector2f(transform.position)
+                        .add(Vector2f(currentRowX, currentRowY)
+                            .mul(spriteSize)
+                            .mul(sprite.size)),
                     transform.rotation,
                     Vector2f(spriteSize).mul(sprite.size),
                     transform.layer
                 )
-                val isFull = suitableBatch.addSprite(sprite.sprite, t, Vector2f(currentRowX, currentRowY))
+                val isFull = suitableBatch.addSprite(sprite.sprite, t)
                 if (isFull) {
                     incrementSuitableSpriteBatch()
                 }

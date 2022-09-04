@@ -1,5 +1,6 @@
 package k2ddt.render.batch
 
+import org.joml.Vector2f
 import org.lwjgl.BufferUtils
 import org.lwjgl.opengl.GL30.*
 import java.nio.Buffer
@@ -13,6 +14,7 @@ abstract class BaseBatch(
 ) {
 
     private data class Buffers(val vbo: Int, val buffer: Buffer)
+    protected data class Quad(val tl: Vector2f, val bl: Vector2f, val br: Vector2f, val tr: Vector2f)
 
     var nEntities: Int = 0
     val nIndexes: Int
@@ -49,6 +51,15 @@ abstract class BaseBatch(
             glDisableVertexAttribArray(i)
         }
         glBindVertexArray(0)
+    }
+
+    protected fun getQuad(): Quad {
+        return Quad(
+            Vector2f(0f, 1f),
+            Vector2f(0f, 0f),
+            Vector2f(1f, 0f),
+            Vector2f(1f, 1f)
+        )
     }
 
     fun addIntAttributeBuffer(index: Int, size: Int) {

@@ -31,11 +31,11 @@ abstract class BaseShader(vertexData: ShaderData, fragmentData: ShaderData) {
 
     }
 
-    fun bind() {
+    open fun bind() {
         glUseProgram(id)
     }
 
-    fun unbind() {
+    open fun unbind() {
         glUseProgram(0)
     }
 

@@ -28,7 +28,7 @@ class ExecutionContext(
         engine.start()
     }
 
-    fun renderSprite(
+    fun render(
         sprite: Sprite,
         transform: Transform,
         color: Color,
@@ -37,18 +37,25 @@ class ExecutionContext(
         graphics.render(sprite, transform)
     }
 
-    fun renderShape(
+    fun render(
         shape: Shape,
         transform: Transform
     ) {
         graphics.render(shape, transform)
     }
 
-    fun renderParticle(
+    fun render(
         particle: Particle,
         transform: Transform
     ) {
         graphics.render(particle, transform)
+    }
+
+    fun render(
+        text: Text,
+        transform: Transform
+    ) {
+        graphics.render(text, transform)
     }
 
 }

@@ -13,8 +13,6 @@ class SpriteBatch(
 ) :
     BaseBatch(maxSprites, 4, 6) {
 
-    private data class Quad(val tl: Vector2f, val bl: Vector2f, val br: Vector2f, val tr: Vector2f)
-
     private val textures: MutableList<Texture> = mutableListOf()
 
     companion object {
@@ -24,6 +22,7 @@ class SpriteBatch(
         const val SCALE_INDEX = 3
         const val TEXTURE_COORDS_INDEX = 4
         const val TEXTURE_INDEX = 5
+        const val LAYER_INDEX = 6
     }
 
     init {
@@ -33,6 +32,7 @@ class SpriteBatch(
         addFloatAttributeBuffer(SCALE_INDEX, 2)
         addFloatAttributeBuffer(TEXTURE_COORDS_INDEX, 2)
         addIntAttributeBuffer(TEXTURE_INDEX, 1)
+        addIntAttributeBuffer(LAYER_INDEX, 1)
     }
 
     override fun bind() {
@@ -47,23 +47,13 @@ class SpriteBatch(
         glBindTexture(GL_TEXTURE_2D, 0)
     }
 
-    private fun getQuad(translatedBy: Vector2f = Vector2f().zero()): Quad {
-        return Quad(
-            Vector2f(0f + translatedBy.x, 1f + translatedBy.y),
-            Vector2f(0f + translatedBy.x, 0f + translatedBy.y),
-            Vector2f(1f + translatedBy.x, 0f + translatedBy.y),
-            Vector2f(1f + translatedBy.x, 1f + translatedBy.y)
-        )
-    }
-
-    fun addSprite(sprite: Sprite, transform: Transform, offset: Vector2f): Boolean {
+    fun addSprite(sprite: Sprite, transform: Transform): Boolean {
 
         if (nEntities >= maxSprites || textures.size >= maxTextures) {
             return true
         }
 
-        val quad = getQuad(offset)
-
+        val quad = getQuad()
         addAttributeData(
             POSITION_INDEX,
             quad.tl.x, quad.tl.y,
@@ -73,6 +63,7 @@ class SpriteBatch(
             perVertex = false
         )
 
+        addAttributeData(LAYER_INDEX, transform.layer)
         addAttributeData(TRANSLATION_INDEX, transform.position.x, transform.position.y)
         addAttributeData(ROTATION_INDEX, transform.rotation)
         addAttributeData(SCALE_INDEX, transform.scale.x, transform.scale.y)

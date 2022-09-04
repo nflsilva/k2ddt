@@ -14,6 +14,7 @@ class ShapesBatch(maxShapes: Int) :
         const val SCALE_INDEX = 3
         const val TYPE_INDEX = 4
         const val COLOR_INDEX = 5
+        const val LAYER_INDEX = 6
     }
 
     init {
@@ -23,23 +24,21 @@ class ShapesBatch(maxShapes: Int) :
         addFloatAttributeBuffer(SCALE_INDEX, 2)
         addIntAttributeBuffer(TYPE_INDEX, 1)
         addFloatAttributeBuffer(COLOR_INDEX, 4)
+        addIntAttributeBuffer(LAYER_INDEX, 1)
     }
 
     fun addShape(shape: Shape, transform: Transform) {
 
-        val tl = Vector2f(0f, 1f)
-        val bl = Vector2f(0f, 0f)
-        val br = Vector2f(1f, 0f)
-        val tr = Vector2f(1f, 1f)
-
+        val quad = getQuad()
         addAttributeData(
             POSITION_INDEX,
-            tl.x, tl.y,
-            bl.x, bl.y,
-            br.x, br.y,
-            tr.x, tr.y,
+            quad.tl.x, quad.tl.y,
+            quad.bl.x, quad.bl.y,
+            quad.br.x, quad.br.y,
+            quad.tr.x, quad.tr.y,
             perVertex = false
         )
+        addAttributeData(LAYER_INDEX, transform.layer)
 
         addAttributeData(TRANSLATION_INDEX, transform.position.x, transform.position.y)
         addAttributeData(ROTATION_INDEX, transform.rotation)
