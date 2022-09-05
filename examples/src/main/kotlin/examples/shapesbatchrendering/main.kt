@@ -65,7 +65,7 @@ private class Delegate : ExecutionDelegate() {
                 45f,
                 90f,
                 colors[4],
-                3
+                1
             )
         )
     }
@@ -97,8 +97,8 @@ private class Delegate : ExecutionDelegate() {
                 0f,
                 size,
                 size,
-                2 + i,
-                true)
+                1 + i,
+                false)
             executionContext.render(sprite, t0, Color(1f), 0.5f)
         }
 

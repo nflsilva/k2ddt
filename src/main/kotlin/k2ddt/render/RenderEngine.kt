@@ -1,15 +1,11 @@
 package k2ddt.render
 
-import k2ddt.render.dto.Color
-import k2ddt.render.dto.Particle
-import k2ddt.render.dto.Shape
 import k2ddt.render.batch.ParticlesBatch
 import k2ddt.render.batch.ShapesBatch
 import k2ddt.render.batch.SpriteBatch
 import k2ddt.render.dto.*
 import k2ddt.render.model.MultiSprite
 import k2ddt.render.shader.*
-import k2ddt.tools.Log
 import org.joml.Matrix4f
 import org.joml.Vector2f
 import org.lwjgl.BufferUtils
@@ -95,34 +91,38 @@ class RenderEngine(private val screenWidth: Int, private val screenHeight: Int) 
             addToSuitableSpriteBatch(sprite, transform)
         }
     }
+
     fun render(particle: Particle, transform: Transform) {
         if (isVisible(transform, Vector2f(particle.size))) {
             addToSuitableParticleBatch(particle, transform)
         }
     }
+
     fun render(shape: Shape, transform: Transform) {
         if (isVisible(transform, transform.scale)) {
             addToSuitableShapeBatch(shape, transform)
         }
     }
+
     fun render(multiSprite: MultiSprite, transform: Transform) {
         if (isVisible(transform, transform.scale)) {
             addToSuitableSpriteBatch(multiSprite, transform)
         }
     }
+
     fun render(text: Text, transform: Transform) {
         val fullTextSprite = MultiSprite(1, text.data.length)
         val spriteSize = Vector2f(transform.scale)
             .div(Vector2f(fullTextSprite.columns.toFloat(), fullTextSprite.rows.toFloat()))
 
-        for(c in 0 until text.data.length){
+        for (c in 0 until text.data.length) {
             val charSprite = text.font.getCharacter(text.data[c])
             fullTextSprite.addSprite(0, c, spriteSize, charSprite)
         }
         render(fullTextSprite, transform)
     }
 
-    fun zoomIn(zoom: Float){
+    fun zoomIn(zoom: Float) {
 
     }
 
@@ -148,6 +148,7 @@ class RenderEngine(private val screenWidth: Int, private val screenHeight: Int) 
             incrementSuitableSpriteBatch()
         }
     }
+
     private fun addToSuitableSpriteBatch(data: MultiSprite, transform: Transform) {
         val suitableBatch = spriteBatches[suitableSpriteBatch]
 
@@ -161,9 +162,11 @@ class RenderEngine(private val screenWidth: Int, private val screenHeight: Int) 
                 val sprite = data.getSprite(r, c) ?: continue
                 val t = Transform(
                     Vector2f(transform.position)
-                        .add(Vector2f(currentRowX, currentRowY)
-                            .mul(spriteSize)
-                            .mul(sprite.size)),
+                        .add(
+                            Vector2f(currentRowX, currentRowY)
+                                .mul(spriteSize)
+                                .mul(sprite.size)
+                        ),
                     transform.rotation,
                     Vector2f(spriteSize).mul(sprite.size),
                     transform.layer
@@ -177,6 +180,7 @@ class RenderEngine(private val screenWidth: Int, private val screenHeight: Int) 
             currentRowY += 1f
         }
     }
+
     private fun addToSuitableParticleBatch(data: Particle, transform: Transform) {
         var suitableBatch: ParticlesBatch? = null
         for (batch in particleBatches) {
@@ -194,6 +198,7 @@ class RenderEngine(private val screenWidth: Int, private val screenHeight: Int) 
 
         suitableBatch.addParticle(data, transform)
     }
+
     private fun addToSuitableShapeBatch(data: Shape, transform: Transform) {
         var suitableBatch: ShapesBatch? = null
         for (batch in shapeBatches) {
@@ -212,7 +217,6 @@ class RenderEngine(private val screenWidth: Int, private val screenHeight: Int) 
         suitableBatch.addShape(data, transform)
     }
 
-    //TODO: move this method into Shader?
     private fun prepareShader(shader: BaseShader, uniformData: ShaderUniforms) {
         shader.bind()
         shader.updateUniforms(uniformData)
@@ -256,6 +260,7 @@ class RenderEngine(private val screenWidth: Int, private val screenHeight: Int) 
             batch.unbind()
         }
     }
+
     private fun drawParticles(projectionMatrix: Matrix4f) {
         for (batch in particleBatches) {
             batch.bind()
@@ -267,6 +272,7 @@ class RenderEngine(private val screenWidth: Int, private val screenHeight: Int) 
             batch.unbind()
         }
     }
+
     private fun drawShapes(projectionMatrix: Matrix4f) {
         for (batch in shapeBatches) {
             batch.bind()

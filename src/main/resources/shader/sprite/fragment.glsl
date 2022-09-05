@@ -10,6 +10,6 @@ out vec4 out_color;
 void main()
 {
     vec4 color = texture(in_samplers[textureIndex], textureCoords);
-    if(color.a == 0.0f) discard;
+    if(color.a < 0.1f) discard;
     out_color = color;
 };

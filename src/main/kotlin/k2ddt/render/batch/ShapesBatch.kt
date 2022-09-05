@@ -1,6 +1,5 @@
 package k2ddt.render.batch
 
-import org.joml.Vector2f
 import k2ddt.render.dto.Shape
 import k2ddt.render.dto.Transform
 
@@ -46,7 +45,7 @@ class ShapesBatch(maxShapes: Int) :
         addAttributeData(SCALE_INDEX, transform.scale.x, transform.scale.y)
         addAttributeData(TYPE_INDEX, shape.type.value)
         addAttributeData(COLOR_INDEX, shape.color.r, shape.color.g, shape.color.b, shape.color.a)
-        addAttributeData(CENTERED_INDEX, if(transform.centered) 1 else 0)
+        addAttributeData(CENTERED_INDEX, if (transform.centered) 0 else 1)
 
         val indexOffset = nEntities * 4
         addIndexData(

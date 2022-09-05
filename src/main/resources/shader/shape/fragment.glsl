@@ -12,22 +12,20 @@ flat in uint centered;
 out vec4 out_color;
 
 void process_circle() {
-    vec2 temp = center;
-    if (centered == 0) { temp -= vec2(0.5); }
-    float dist = dot(temp, temp);
+    vec2 dist_b = center - vec2(0.5 * centered);
+    float dist = dot(dist_b, dist_b);
 
     float radius = 0.5f;
-    if (dist > (radius * radius)){ discard; }
+    if (dist > (radius * radius)) discard;
 }
 
 void process_donut() {
-    vec2 temp = center;
-    if (centered == 0) { temp -= vec2(0.5); }
-    float dist = dot(temp, temp);
+    vec2 dist_b = center - vec2(0.5 * centered);
+    float dist = dot(dist_b, dist_b);
 
     float radius = 0.5;
     float inner_radius = 0.25;
-    if (dist >= (radius * radius) || dist <= (inner_radius * inner_radius)) { discard; }
+    if (dist >= (radius * radius) || dist <= (inner_radius * inner_radius)) discard;
 }
 
 void main()

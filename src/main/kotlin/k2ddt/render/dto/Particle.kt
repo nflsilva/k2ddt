@@ -23,5 +23,6 @@ data class Particle(
     enum class Type(val value: Int) {
         CIRCLE(0),
         OTHER(1),
+        SQUARE(2),
     }
 }
