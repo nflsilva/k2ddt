@@ -1,5 +1,7 @@
 package k2ddt.render.batch
 
+import k2ddt.render.dto.RenderEntity
+import k2ddt.render.dto.Transform
 import org.joml.Vector2f
 import org.lwjgl.BufferUtils
 import org.lwjgl.opengl.GL30.*
@@ -7,7 +9,7 @@ import java.nio.Buffer
 import java.nio.FloatBuffer
 import java.nio.IntBuffer
 
-abstract class BaseBatch(
+abstract class BaseBatch<T : RenderEntity>(
     private val maxEntities: Int,
     private val nVerticesPerEntity: Int,
     private val nIndexesPerEntity: Int
@@ -32,6 +34,7 @@ abstract class BaseBatch(
         glBindBuffer(GL_ARRAY_BUFFER, 0)
     }
 
+    abstract fun addEntity(entity: T, transform: Transform)
     open fun bind() {
 
         glBindVertexArray(vao)
@@ -46,6 +49,7 @@ abstract class BaseBatch(
         bindIndexBuffer(indexesVbo, indices.flip())
 
     }
+
     open fun unbind() {
         for (i in 0 until attributes.size) {
             glDisableVertexAttribArray(i)
@@ -54,7 +58,7 @@ abstract class BaseBatch(
     }
 
     protected fun getQuad(centered: Boolean): Quad {
-        val off = if(centered) 0.5f else 0f
+        val off = if (centered) 0.5f else 0f
         return Quad(
             Vector2f(0f - off, 1f - off),
             Vector2f(0f - off, 0f - off),
@@ -73,6 +77,7 @@ abstract class BaseBatch(
         glBindBuffer(GL_ARRAY_BUFFER, 0)
         attributes[index] = Buffers(vbo, buffer)
     }
+
     fun addFloatAttributeBuffer(index: Int, size: Int) {
         glBindVertexArray(vao)
         val vbo = glGenBuffers()
@@ -93,6 +98,7 @@ abstract class BaseBatch(
             }
         }
     }
+
     fun addAttributeData(index: Int, vararg data: Float, perVertex: Boolean = true) {
         val adds = if (perVertex) nVerticesPerEntity else 1
         val buffer = attributes[index]?.buffer as? FloatBuffer ?: return
@@ -102,6 +108,7 @@ abstract class BaseBatch(
             }
         }
     }
+
     fun addIndexData(vararg data: Int) {
         data.forEach { value ->
             indices.put(value)
@@ -113,9 +120,11 @@ abstract class BaseBatch(
         indices.clear()
         nEntities = 0
     }
+
     open fun isFull(): Boolean {
         return nEntities >= maxEntities
     }
+
     fun cleanUp() {
         glBindVertexArray(0)
         glDeleteVertexArrays(vao)
@@ -129,6 +138,7 @@ abstract class BaseBatch(
         glBufferData(GL_ELEMENT_ARRAY_BUFFER, buffer, GL_DYNAMIC_DRAW)
         return Buffers(vbo, buffer)
     }
+
     private fun bindAttributeBuffer(vbo: Int, buffer: Buffer) {
         // TODO: Refactor this IntBuffer / FloatBuffer mess
         glBindBuffer(GL_ARRAY_BUFFER, vbo)
@@ -139,6 +149,7 @@ abstract class BaseBatch(
             glBufferSubData(GL_ARRAY_BUFFER, 0, buffer as FloatBuffer)
         }
     }
+
     private fun bindIndexBuffer(vbo: Int, buffer: Buffer) {
         val intBuffer = buffer as? IntBuffer ?: return
         glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, vbo)

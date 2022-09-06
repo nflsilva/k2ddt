@@ -65,7 +65,7 @@ private class Delegate : ExecutionDelegate() {
                 45f,
                 90f,
                 colors[4],
-                1
+                0
             )
         )
     }

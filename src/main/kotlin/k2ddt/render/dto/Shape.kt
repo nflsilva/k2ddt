@@ -11,7 +11,7 @@ package k2ddt.render.dto
 data class Shape(
     val type: Type,
     val color: Color
-) {
+) : RenderEntity() {
 
     /**
      * Shape Types data class

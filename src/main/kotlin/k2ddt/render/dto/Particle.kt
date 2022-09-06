@@ -13,7 +13,7 @@ data class Particle(
     val type: Type,
     val size: Float,
     val color: Color
-) {
+): RenderEntity() {
     /**
      * Particle Types data class
      *

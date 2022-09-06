@@ -1,18 +1,15 @@
 package k2ddt.render.batch
 
-import org.joml.Vector2f
-import org.lwjgl.opengl.GL11.GL_TEXTURE_2D
-import org.lwjgl.opengl.GL11.glBindTexture
 import k2ddt.render.dto.Sprite
 import k2ddt.render.dto.Transform
 import k2ddt.render.model.Texture
+import org.lwjgl.BufferUtils
+import org.lwjgl.opengl.GL11.*
+import org.lwjgl.opengl.GL20.GL_MAX_TEXTURE_IMAGE_UNITS
 
-class SpriteBatch(
-    private val maxSprites: Int,
+class SpriteBatch(maxSprites: Int) : BaseBatch<Sprite>(maxSprites, 4, 6) {
+
     private val maxTextures: Int
-) :
-    BaseBatch(maxSprites, 4, 6) {
-
     private val textures: MutableList<Texture> = mutableListOf()
 
     companion object {
@@ -33,25 +30,15 @@ class SpriteBatch(
         addFloatAttributeBuffer(TEXTURE_COORDS_INDEX, 2)
         addIntAttributeBuffer(TEXTURE_INDEX, 1)
         addIntAttributeBuffer(LAYER_INDEX, 1)
+
+        val mtsb = BufferUtils.createIntBuffer(1)
+        glGetIntegerv(GL_MAX_TEXTURE_IMAGE_UNITS, mtsb)
+        maxTextures = mtsb.get()
     }
 
-    override fun bind() {
-        super.bind()
-        for (i in 0 until textures.size) {
-            textures[i].bind(i)
-        }
-    }
+    override fun addEntity(entity: Sprite, transform: Transform) {
 
-    override fun unbind() {
-        super.unbind()
-        glBindTexture(GL_TEXTURE_2D, 0)
-    }
-
-    fun addSprite(sprite: Sprite, transform: Transform): Boolean {
-
-        if (nEntities >= maxSprites || textures.size >= maxTextures) {
-            return true
-        }
+        if (isFull()) return
 
         val quad = getQuad(transform.centered)
         addAttributeData(
@@ -69,29 +56,29 @@ class SpriteBatch(
         addAttributeData(SCALE_INDEX, transform.scale.x, transform.scale.y)
         addAttributeData(
             TEXTURE_COORDS_INDEX,
-            sprite.startTextureCoordinates.x,   // TL
-            sprite.startTextureCoordinates.y,
+            entity.startTextureCoordinates.x,   // TL
+            entity.startTextureCoordinates.y,
 
-            sprite.startTextureCoordinates.x,   // BL
-            sprite.endTextureCoordinates.y,
+            entity.startTextureCoordinates.x,   // BL
+            entity.endTextureCoordinates.y,
 
-            sprite.endTextureCoordinates.x,     // BR
-            sprite.endTextureCoordinates.y,
+            entity.endTextureCoordinates.x,     // BR
+            entity.endTextureCoordinates.y,
 
-            sprite.endTextureCoordinates.x,     // TR
-            sprite.startTextureCoordinates.y,
+            entity.endTextureCoordinates.x,     // TR
+            entity.startTextureCoordinates.y,
             perVertex = false
         )
 
         var textureIndex: Int? = null
-        for((i, texture) in textures.withIndex()){
-            if(texture.id == sprite.texture.id){
+        for ((i, texture) in textures.withIndex()) {
+            if (texture.id == entity.texture.id) {
                 textureIndex = i
                 break
             }
         }
-        if(textureIndex == null){
-            textures.add(sprite.texture)
+        if (textureIndex == null) {
+            textures.add(entity.texture)
             textureIndex = textures.size - 1
         }
 
@@ -107,8 +94,18 @@ class SpriteBatch(
             0 + indexOffset
         )
         nEntities += 1
+    }
 
-        return nEntities >= maxSprites || textures.size >= maxTextures
+    override fun bind() {
+        super.bind()
+        for (i in 0 until textures.size) {
+            textures[i].bind(i)
+        }
+    }
+
+    override fun unbind() {
+        super.unbind()
+        glBindTexture(GL_TEXTURE_2D, 0)
     }
 
     override fun clear() {
@@ -118,7 +115,7 @@ class SpriteBatch(
 
     override fun isFull(): Boolean {
         val fullEntities = super.isFull()
-        return fullEntities || textures.size  >= maxTextures
+        return fullEntities || textures.size >= maxTextures
     }
 
     fun hasTexture(texture: Texture): Boolean {

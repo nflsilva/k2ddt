@@ -3,8 +3,8 @@ package k2ddt.render.batch
 import k2ddt.render.dto.Particle
 import k2ddt.render.dto.Transform
 
-class ParticlesBatch(maxEntities: Int) :
-    BaseBatch(maxEntities, 1, 1) {
+class ParticleBatch(maxEntities: Int) :
+    BaseBatch<Particle>(maxEntities, 1, 1) {
 
     companion object {
         const val POSITION_INDEX = 0
@@ -22,12 +22,14 @@ class ParticlesBatch(maxEntities: Int) :
         addIntAttributeBuffer(LAYER_INDEX, 1)
     }
 
-    fun addParticle(particle: Particle, transform: Transform) {
+    override fun addEntity(entity: Particle, transform: Transform) {
+        if(isFull()) return
+
         addAttributeData(POSITION_INDEX, transform.position.x, transform.position.y)
         addAttributeData(LAYER_INDEX, transform.layer)
-        addAttributeData(SIZE_INDEX, particle.size)
-        addAttributeData(TYPE_INDEX, particle.type.value)
-        addAttributeData(COLOR_INDEX, particle.color.r, particle.color.g, particle.color.b, particle.color.a)
+        addAttributeData(SIZE_INDEX, entity.size)
+        addAttributeData(TYPE_INDEX, entity.type.value)
+        addAttributeData(COLOR_INDEX, entity.color.r, entity.color.g, entity.color.b, entity.color.a)
         addIndexData(nEntities)
         nEntities += 1
     }
