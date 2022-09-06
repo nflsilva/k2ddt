@@ -99,7 +99,7 @@ private class Delegate : ExecutionDelegate() {
                 size,
                 1 + i,
                 false)
-            executionContext.render(sprite, t0, Color(1f), 0.5f)
+            executionContext.render(sprite, t0)
         }
 
         val text = Text("Hello World!", font)

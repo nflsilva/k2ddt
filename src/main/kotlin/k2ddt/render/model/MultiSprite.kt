@@ -23,6 +23,7 @@ class MultiSprite(
         get() = textureSet.size
 
     var nSprites: Int = 0
+    var isTransparent = false
 
     fun addSprite(row: Int, column: Int, size: Float, sprite: Sprite) {
         addSprite(row, column, Vector2f(size), sprite)
@@ -33,6 +34,7 @@ class MultiSprite(
         sprites[row][column] = SpriteInfo(sprite, size)
         textureSet.add(sprite.texture.id)
         nSprites += 1
+        isTransparent = isTransparent || sprite.color.a < 1.0f
     }
 
     fun getSprite(row: Int, column: Int): SpriteInfo? {

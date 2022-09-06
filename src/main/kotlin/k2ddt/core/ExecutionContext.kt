@@ -30,9 +30,7 @@ class ExecutionContext(
 
     fun render(
         sprite: Sprite,
-        transform: Transform,
-        color: Color,
-        colorPercentage: Float
+        transform: Transform
     ) {
         graphics.render(sprite, transform)
     }

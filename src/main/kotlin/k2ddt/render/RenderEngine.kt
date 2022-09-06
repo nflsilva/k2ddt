@@ -1,8 +1,5 @@
 package k2ddt.render
 
-import k2ddt.render.batch.ParticleBatch
-import k2ddt.render.batch.ShapeBatch
-import k2ddt.render.batch.SpriteBatch
 import k2ddt.render.batchController.BatchControllerBundle
 import k2ddt.render.dto.*
 import k2ddt.render.model.MultiSprite
@@ -73,25 +70,42 @@ class RenderEngine(private val screenWidth: Int, private val screenHeight: Int) 
 
     fun render(sprite: Sprite, transform: Transform) {
         if (isVisible(transform, transform.scale)) {
-            opaqueSpriteBatches.addToSuitableBatch(sprite, transform)
+            if (sprite.color.a < 1.0f) {
+                transparentSpriteBatches.addToSuitableBatch(sprite, transform)
+            } else {
+                opaqueSpriteBatches.addToSuitableBatch(sprite, transform)
+            }
         }
     }
 
     fun render(particle: Particle, transform: Transform) {
         if (isVisible(transform, Vector2f(particle.size))) {
-            opaqueSpriteBatches.addToSuitableBatch(particle, transform)
+            if (particle.color.a < 1.0f) {
+                transparentSpriteBatches.addToSuitableBatch(particle, transform)
+            } else {
+                opaqueSpriteBatches.addToSuitableBatch(particle, transform)
+            }
         }
     }
 
     fun render(shape: Shape, transform: Transform) {
         if (isVisible(transform, transform.scale)) {
-            opaqueSpriteBatches.addToSuitableBatch(shape, transform)
+            if (shape.color.a < 1.0f) {
+                transparentSpriteBatches.addToSuitableBatch(shape, transform)
+            } else {
+                opaqueSpriteBatches.addToSuitableBatch(shape, transform)
+            }
         }
     }
 
     fun render(multiSprite: MultiSprite, transform: Transform) {
         if (isVisible(transform, transform.scale)) {
-            opaqueSpriteBatches.addToSuitableBatch(multiSprite, transform)
+            if(multiSprite.isTransparent){
+                transparentSpriteBatches.addToSuitableBatch(multiSprite, transform)
+            }
+            else {
+                opaqueSpriteBatches.addToSuitableBatch(multiSprite, transform)
+            }
         }
     }
 
@@ -108,17 +122,13 @@ class RenderEngine(private val screenWidth: Int, private val screenHeight: Int) 
                 transform.position.y + size.y > bottom - DEFAULT_SCREEN_RENDER_MARGINS
     }
 
-    private fun prepareShader(shader: BaseShader, uniformData: ShaderUniforms) {
-        shader.bind()
-        shader.updateUniforms(uniformData)
-    }
-
     private fun draw() {
         val projectionMatrix = Matrix4f()
             .setOrtho(left, right, bottom, top, 0f, 1000f)
         val uniforms = ShaderUniforms(projectionMatrix)
         opaqueSpriteBatches.draw(uniforms)
         transparentSpriteBatches.draw(uniforms)
+
 
         /*
         Log.d("Sprite batches: ${spriteBatches.size} " +

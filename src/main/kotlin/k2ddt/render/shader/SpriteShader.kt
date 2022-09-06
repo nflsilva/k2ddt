@@ -15,6 +15,8 @@ class SpriteShader : BaseShader(VERTEX_SHADER, FRAGMENT_SHADER) {
         bindAttribute(4, TEXTCOORDS_ATTRIBUTE)
         bindAttribute(5, TEXTINDEX_ATTRIBUTE)
         bindAttribute(6, LAYER_ATTRIBUTE)
+        bindAttribute(7, COLOR_ATTRIBUTE)
+        bindAttribute(8, COLOR_PERCENTAGE_ATTRIBUTE)
     }
 
     override fun createUniforms() {
@@ -44,6 +46,8 @@ class SpriteShader : BaseShader(VERTEX_SHADER, FRAGMENT_SHADER) {
         private const val TEXTCOORDS_ATTRIBUTE = "in_textureCoords"
         private const val TEXTINDEX_ATTRIBUTE = "in_textureIndex"
         private const val LAYER_ATTRIBUTE = "in_layer"
+        private const val COLOR_ATTRIBUTE = "in_color"
+        private const val COLOR_PERCENTAGE_ATTRIBUTE = "in_colorPercentage"
 
         private const val PROJECTION_MATRIX_UNIFORM = "in_projectionMatrix"
         private const val TEXTURE_SLOTS_UNIFORM = "in_samplers"

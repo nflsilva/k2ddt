@@ -18,10 +18,12 @@ data class Sprite(
     val texture: Texture,
     val startTextureCoordinates: Vector2f = Vector2f(0.0F),
     val endTextureCoordinates: Vector2f = Vector2f(1.0F),
-    val color: Color = Color(0f),
+    val color: Color = Color(0f, 0f, 0f, 1f),
     val colorPercentage: Float = 0f
-): RenderEntity() {
+) : RenderEntity() {
 
     constructor(textureResource: String) : this(Texture(textureResource))
+    constructor(textureResource: String, color: Color, colorPercentage: Float) :
+            this(Texture(textureResource), color = color, colorPercentage = colorPercentage)
 
 }

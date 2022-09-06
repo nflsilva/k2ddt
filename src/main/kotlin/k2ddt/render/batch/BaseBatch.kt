@@ -48,6 +48,9 @@ abstract class BaseBatch<T : RenderEntity>(
 
         bindIndexBuffer(indexesVbo, indices.flip())
 
+        glEnable(GL_BLEND)
+        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA)
+        glBlendEquation(GL_FUNC_ADD)
     }
 
     open fun unbind() {
@@ -55,6 +58,7 @@ abstract class BaseBatch<T : RenderEntity>(
             glDisableVertexAttribArray(i)
         }
         glBindVertexArray(0)
+        glDisable(GL_BLEND)
     }
 
     protected fun getQuad(centered: Boolean): Quad {
