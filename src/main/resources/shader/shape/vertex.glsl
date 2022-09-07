@@ -6,8 +6,7 @@ layout (location=2) in float in_rotation;
 layout (location=3) in vec2 in_scale;
 layout (location=4) in uint in_type;
 layout (location=5) in vec4 in_color;
-layout (location=6) in uint in_layer;
-layout (location=7) in uint in_centered;
+layout (location=6) in uint in_centered;
 
 uniform mat4 in_projectionMatrix;
 
@@ -38,6 +37,6 @@ void main(){
     color = in_color;
     center = in_position;
     centered = in_centered;
-    gl_Position = in_projectionMatrix * vec4(final_position, in_layer * -1f, 1f);
+    gl_Position = in_projectionMatrix * vec4(final_position, 0f, 1f);
 
 };

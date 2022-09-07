@@ -13,8 +13,7 @@ class ShapeBatch(maxShapes: Int) :
         const val SCALE_INDEX = 3
         const val TYPE_INDEX = 4
         const val COLOR_INDEX = 5
-        const val LAYER_INDEX = 6
-        const val CENTERED_INDEX = 7
+        const val CENTERED_INDEX = 6
     }
 
     init {
@@ -24,7 +23,6 @@ class ShapeBatch(maxShapes: Int) :
         addFloatAttributeBuffer(SCALE_INDEX, 2)
         addIntAttributeBuffer(TYPE_INDEX, 1)
         addFloatAttributeBuffer(COLOR_INDEX, 4)
-        addIntAttributeBuffer(LAYER_INDEX, 1)
         addIntAttributeBuffer(CENTERED_INDEX, 1)
     }
 
@@ -40,7 +38,6 @@ class ShapeBatch(maxShapes: Int) :
             quad.tr.x, quad.tr.y,
             perVertex = false
         )
-        addAttributeData(LAYER_INDEX, transform.layer)
         addAttributeData(TRANSLATION_INDEX, transform.position.x, transform.position.y)
         addAttributeData(ROTATION_INDEX, transform.rotation)
         addAttributeData(SCALE_INDEX, transform.scale.x, transform.scale.y)

@@ -14,8 +14,7 @@ class ShapeShader : BaseShader(VERTEX_SHADER, FRAGMENT_SHADER) {
         bindAttribute(3, SCALE_ATTRIBUTE)
         bindAttribute(4, TYPE_ATTRIBUTE)
         bindAttribute(5, COLOR_ATTRIBUTE)
-        bindAttribute(6, LAYER_ATTRIBUTE)
-        bindAttribute(7, CENTERED_ATTRIBUTE)
+        bindAttribute(6, CENTERED_ATTRIBUTE)
     }
 
     override fun createUniforms() {
@@ -36,7 +35,6 @@ class ShapeShader : BaseShader(VERTEX_SHADER, FRAGMENT_SHADER) {
         private const val SCALE_ATTRIBUTE = "in_scale"
         private const val TYPE_ATTRIBUTE = "in_type"
         private const val COLOR_ATTRIBUTE = "in_color"
-        private const val LAYER_ATTRIBUTE = "in_layer"
         private const val CENTERED_ATTRIBUTE = "in_centered"
 
         private const val PROJECTION_MATRIX_UNIFORM = "in_projectionMatrix"

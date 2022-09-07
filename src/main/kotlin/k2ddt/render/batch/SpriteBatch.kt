@@ -19,9 +19,8 @@ class SpriteBatch(maxSprites: Int) : BaseBatch<Sprite>(maxSprites, 4, 6) {
         const val SCALE_INDEX = 3
         const val TEXTURE_COORDS_INDEX = 4
         const val TEXTURE_INDEX = 5
-        const val LAYER_INDEX = 6
-        const val COLOR_INDEX = 7
-        const val COLOR_PERCENTAGE_INDEX = 8
+        const val COLOR_INDEX = 6
+        const val COLOR_PERCENTAGE_INDEX = 7
     }
 
     init {
@@ -31,7 +30,6 @@ class SpriteBatch(maxSprites: Int) : BaseBatch<Sprite>(maxSprites, 4, 6) {
         addFloatAttributeBuffer(SCALE_INDEX, 2)
         addFloatAttributeBuffer(TEXTURE_COORDS_INDEX, 2)
         addIntAttributeBuffer(TEXTURE_INDEX, 1)
-        addIntAttributeBuffer(LAYER_INDEX, 1)
         addFloatAttributeBuffer(COLOR_INDEX, 4)
         addFloatAttributeBuffer(COLOR_PERCENTAGE_INDEX, 1)
 
@@ -54,7 +52,6 @@ class SpriteBatch(maxSprites: Int) : BaseBatch<Sprite>(maxSprites, 4, 6) {
             perVertex = false
         )
 
-        addAttributeData(LAYER_INDEX, transform.layer)
         addAttributeData(TRANSLATION_INDEX, transform.position.x, transform.position.y)
         addAttributeData(ROTATION_INDEX, transform.rotation)
         addAttributeData(SCALE_INDEX, transform.scale.x, transform.scale.y)

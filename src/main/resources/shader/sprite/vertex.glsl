@@ -6,9 +6,8 @@ layout (location=2) in float in_rotation;
 layout (location=3) in vec2 in_scale;
 layout (location=4) in vec2 in_textureCoords;
 layout (location=5) in uint in_textureIndex;
-layout (location=6) in uint in_layer;
-layout (location=7) in vec4 in_color;
-layout (location=8) in float in_colorPercentage;
+layout (location=6) in vec4 in_color;
+layout (location=7) in float in_colorPercentage;
 
 uniform mat4 in_projectionMatrix;
 
@@ -36,7 +35,7 @@ void main(){
     final_position = rotate(final_position, in_rotation);
     final_position = translate(final_position, in_translation);
 
-    gl_Position = in_projectionMatrix * vec4(final_position, in_layer * -1f, 1f);
+    gl_Position = in_projectionMatrix * vec4(final_position, 0f, 1f);
     textureCoords = in_textureCoords;
     textureIndex = in_textureIndex;
     color = in_color;
