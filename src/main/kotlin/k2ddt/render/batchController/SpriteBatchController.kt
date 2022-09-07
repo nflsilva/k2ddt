@@ -9,7 +9,7 @@ class SpriteBatchController(shader: SpriteShader) : RenderEntityBatchController<
 
     override fun draw(uniforms: ShaderUniforms) {
         shader.bind()
-        for (batch in batches) {
+        for (batch in batchesPerLayer) {
             batch.bind()
             uniforms.textureSlots = batch.getNumberOfTextures()
             shader.updateUniforms(uniforms)
@@ -20,7 +20,7 @@ class SpriteBatchController(shader: SpriteShader) : RenderEntityBatchController<
     }
 
     override fun addNewBatch() {
-        batches.add(SpriteBatch(DEFAULT_BATCH_SIZE))
+        batchesPerLayer.add(SpriteBatch(DEFAULT_BATCH_SIZE))
     }
 
 }

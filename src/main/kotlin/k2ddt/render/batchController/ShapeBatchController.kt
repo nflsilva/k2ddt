@@ -9,7 +9,7 @@ class ShapeBatchController(shader: ShapeShader) : RenderEntityBatchController<Sh
 
     override fun draw(uniforms: ShaderUniforms) {
         shader.bind()
-        for (batch in batches) {
+        for (batch in batchesPerLayer) {
             batch.bind()
             shader.updateUniforms(uniforms)
             glDrawElements(GL_TRIANGLES, batch.nIndexes, GL_UNSIGNED_INT, 0)
@@ -19,6 +19,6 @@ class ShapeBatchController(shader: ShapeShader) : RenderEntityBatchController<Sh
     }
 
     override fun addNewBatch() {
-        batches.add(ShapeBatch(DEFAULT_BATCH_SIZE))
+        batchesPerLayer.add(ShapeBatch(DEFAULT_BATCH_SIZE))
     }
 }

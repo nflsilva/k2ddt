@@ -8,7 +8,7 @@ import org.lwjgl.opengl.GL11.*
 class ParticleBatchController(shader: ParticleShader) : RenderEntityBatchController<ParticleBatch>(shader) {
     override fun draw(uniforms: ShaderUniforms) {
         shader.bind()
-        for (batch in batches) {
+        for (batch in batchesPerLayer) {
             batch.bind()
             shader.updateUniforms(uniforms)
             glDrawElements(GL_POINTS, batch.nIndexes, GL_UNSIGNED_INT, 0)
@@ -18,6 +18,6 @@ class ParticleBatchController(shader: ParticleShader) : RenderEntityBatchControl
     }
 
     override fun addNewBatch() {
-        batches.add(ParticleBatch(DEFAULT_BATCH_SIZE))
+        batchesPerLayer.add(ParticleBatch(DEFAULT_BATCH_SIZE))
     }
 }

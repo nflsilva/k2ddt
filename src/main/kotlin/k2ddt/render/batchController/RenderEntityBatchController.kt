@@ -3,13 +3,12 @@ package k2ddt.render.batchController
 import k2ddt.render.batch.BaseBatch
 import k2ddt.render.shader.BaseShader
 import k2ddt.render.shader.ShaderUniforms
-import java.lang.Integer.max
 
 abstract class RenderEntityBatchController<T : BaseBatch<*>>(
     protected val shader: BaseShader
 ) {
 
-    protected val batches: MutableList<T> = mutableListOf()
+    protected val batchesPerLayer: MutableList<T> = mutableListOf()
     private var suitableBatchIndex : Int = -1
 
     companion object {
@@ -17,17 +16,17 @@ abstract class RenderEntityBatchController<T : BaseBatch<*>>(
     }
 
     fun getSuitableBatch(): T {
-        if (batches.isEmpty() || batches[suitableBatchIndex].isFull()) {
+        if (batchesPerLayer.isEmpty() || batchesPerLayer[suitableBatchIndex].isFull()) {
             suitableBatchIndex += 1
-            if(suitableBatchIndex == batches.size) {
+            if(suitableBatchIndex == batchesPerLayer.size) {
                 addNewBatch()
             }
         }
-        return batches[suitableBatchIndex]
+        return batchesPerLayer[suitableBatchIndex]
     }
 
     fun clearBatches() {
-        batches.forEach { it.clear() }
+        batchesPerLayer.forEach { it.clear() }
         suitableBatchIndex = if(suitableBatchIndex == -1) -1 else 0
     }
 

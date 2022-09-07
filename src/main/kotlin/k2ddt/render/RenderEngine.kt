@@ -40,8 +40,8 @@ class RenderEngine(private val screenWidth: Int, private val screenHeight: Int) 
         opaqueSpriteBatches = BatchControllerBundle(shaderBundle)
         transparentSpriteBatches = BatchControllerBundle(shaderBundle)
 
-        glEnable(GL_DEPTH_TEST)
-        glDepthFunc(GL_LESS)
+        //glEnable(GL_DEPTH_TEST)
+        //glDepthFunc(GL_LESS)
     }
 
     fun onFrame() {
