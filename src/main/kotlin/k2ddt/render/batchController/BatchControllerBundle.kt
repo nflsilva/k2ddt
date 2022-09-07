@@ -13,7 +13,7 @@ class BatchControllerBundle(shaderBundle: ShaderBundle) {
     private val particleBatches: ParticleBatchController = ParticleBatchController(shaderBundle.particleShader)
 
     fun addToSuitableBatch(data: Sprite, transform: Transform) {
-        val suitableBatch = spriteBatches.getSuitableBatch()
+        val suitableBatch = spriteBatches.getSuitableBatch(transform.layer)
         suitableBatch.addEntity(data, transform)
     }
 
@@ -38,7 +38,7 @@ class BatchControllerBundle(shaderBundle: ShaderBundle) {
                     Vector2f(spriteSize).mul(sprite.size),
                     transform.layer
                 )
-                val suitableBatch = spriteBatches.getSuitableBatch()
+                val suitableBatch = spriteBatches.getSuitableBatch(transform.layer)
                 suitableBatch.addEntity(sprite.sprite, t)
                 currentRowX += 1f
             }
@@ -47,12 +47,12 @@ class BatchControllerBundle(shaderBundle: ShaderBundle) {
     }
 
     fun addToSuitableBatch(data: Particle, transform: Transform) {
-        val suitableBatch = particleBatches.getSuitableBatch()
+        val suitableBatch = particleBatches.getSuitableBatch(transform.layer)
         suitableBatch.addEntity(data, transform)
     }
 
     fun addToSuitableBatch(data: Shape, transform: Transform) {
-        val suitableBatch = shapeBatches.getSuitableBatch()
+        val suitableBatch = shapeBatches.getSuitableBatch(transform.layer)
         suitableBatch.addEntity(data, transform)
     }
 
@@ -69,9 +69,12 @@ class BatchControllerBundle(shaderBundle: ShaderBundle) {
     }
 
     fun draw(uniforms: ShaderUniforms) {
-        spriteBatches.draw(uniforms)
-        shapeBatches.draw(uniforms)
-        particleBatches.draw(uniforms)
+        for(layer in 0 until RenderEntityBatchController.DEFAULT_N_LAYERS){
+            val layerToDraw = RenderEntityBatchController.DEFAULT_N_LAYERS - layer - 1
+            spriteBatches.draw(layerToDraw, uniforms)
+            shapeBatches.draw(layerToDraw, uniforms)
+            particleBatches.draw(layerToDraw, uniforms)
+        }
     }
 
     fun clearBatches() {

@@ -7,9 +7,10 @@ import org.lwjgl.opengl.GL11.*
 
 class SpriteBatchController(shader: SpriteShader) : RenderEntityBatchController<SpriteBatch>(shader) {
 
-    override fun draw(uniforms: ShaderUniforms) {
+    override fun draw(layer: Int, uniforms: ShaderUniforms) {
+        val batches = batchesPerLayer[layer]
         shader.bind()
-        for (batch in batchesPerLayer) {
+        for (batch in batches) {
             batch.bind()
             uniforms.textureSlots = batch.getNumberOfTextures()
             shader.updateUniforms(uniforms)
@@ -19,8 +20,8 @@ class SpriteBatchController(shader: SpriteShader) : RenderEntityBatchController<
         shader.unbind()
     }
 
-    override fun addNewBatch() {
-        batchesPerLayer.add(SpriteBatch(DEFAULT_BATCH_SIZE))
+    override fun addNewBatch(layer: Int) {
+        batchesPerLayer[layer].add(SpriteBatch(DEFAULT_BATCH_SIZE))
     }
 
 }

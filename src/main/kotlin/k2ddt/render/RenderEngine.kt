@@ -18,7 +18,6 @@ class RenderEngine(private val screenWidth: Int, private val screenHeight: Int) 
     private lateinit var shapeShader: ShapeShader
 
     private lateinit var opaqueSpriteBatches: BatchControllerBundle
-    private lateinit var transparentSpriteBatches: BatchControllerBundle
 
     private var zoom = 0.0f
     private val bottom = 0.0f
@@ -38,10 +37,8 @@ class RenderEngine(private val screenWidth: Int, private val screenHeight: Int) 
 
         val shaderBundle = ShaderBundle()
         opaqueSpriteBatches = BatchControllerBundle(shaderBundle)
-        transparentSpriteBatches = BatchControllerBundle(shaderBundle)
 
-        //glEnable(GL_DEPTH_TEST)
-        //glDepthFunc(GL_LESS)
+        glDisable(GL_DEPTH_TEST)
     }
 
     fun onFrame() {
@@ -70,42 +67,25 @@ class RenderEngine(private val screenWidth: Int, private val screenHeight: Int) 
 
     fun render(sprite: Sprite, transform: Transform) {
         if (isVisible(transform, transform.scale)) {
-            if (sprite.color.a < 1.0f) {
-                transparentSpriteBatches.addToSuitableBatch(sprite, transform)
-            } else {
-                opaqueSpriteBatches.addToSuitableBatch(sprite, transform)
-            }
+            opaqueSpriteBatches.addToSuitableBatch(sprite, transform)
         }
     }
 
     fun render(particle: Particle, transform: Transform) {
         if (isVisible(transform, Vector2f(particle.size))) {
-            if (particle.color.a < 1.0f) {
-                transparentSpriteBatches.addToSuitableBatch(particle, transform)
-            } else {
-                opaqueSpriteBatches.addToSuitableBatch(particle, transform)
-            }
+            opaqueSpriteBatches.addToSuitableBatch(particle, transform)
         }
     }
 
     fun render(shape: Shape, transform: Transform) {
         if (isVisible(transform, transform.scale)) {
-            if (shape.color.a < 1.0f) {
-                transparentSpriteBatches.addToSuitableBatch(shape, transform)
-            } else {
-                opaqueSpriteBatches.addToSuitableBatch(shape, transform)
-            }
+            opaqueSpriteBatches.addToSuitableBatch(shape, transform)
         }
     }
 
     fun render(multiSprite: MultiSprite, transform: Transform) {
         if (isVisible(transform, transform.scale)) {
-            if(multiSprite.isTransparent){
-                transparentSpriteBatches.addToSuitableBatch(multiSprite, transform)
-            }
-            else {
-                opaqueSpriteBatches.addToSuitableBatch(multiSprite, transform)
-            }
+            opaqueSpriteBatches.addToSuitableBatch(multiSprite, transform)
         }
     }
 
@@ -127,8 +107,6 @@ class RenderEngine(private val screenWidth: Int, private val screenHeight: Int) 
             .setOrtho(left, right, bottom, top, 0f, 1000f)
         val uniforms = ShaderUniforms(projectionMatrix)
         opaqueSpriteBatches.draw(uniforms)
-        transparentSpriteBatches.draw(uniforms)
-
 
         /*
         Log.d("Sprite batches: ${spriteBatches.size} " +
@@ -141,7 +119,6 @@ class RenderEngine(private val screenWidth: Int, private val screenHeight: Int) 
 
     private fun clearBatches() {
         opaqueSpriteBatches.clearBatches()
-        transparentSpriteBatches.clearBatches()
     }
 
 }

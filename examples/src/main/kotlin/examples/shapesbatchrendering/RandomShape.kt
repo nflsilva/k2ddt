@@ -32,7 +32,7 @@ class RandomShape(
 
     fun tick(updateContext: UpdateContext) {
         transform.translate(speed * updateContext.elapsedTime * direction, 0f)
-        transform.rotation += 0.05f
+        transform.rotation += 0.025f
 
         if (transform.position.x <= 0f || transform.position.x >= 1280f) {
             direction *= -1

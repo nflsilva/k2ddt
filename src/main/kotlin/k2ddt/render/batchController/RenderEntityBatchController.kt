@@ -8,30 +8,33 @@ abstract class RenderEntityBatchController<T : BaseBatch<*>>(
     protected val shader: BaseShader
 ) {
 
-    protected val batchesPerLayer: MutableList<T> = mutableListOf()
-    private var suitableBatchIndex : Int = -1
-
     companion object {
         const val DEFAULT_BATCH_SIZE: Int = 2
+        const val DEFAULT_N_LAYERS: Int = 10
     }
 
-    fun getSuitableBatch(): T {
-        if (batchesPerLayer.isEmpty() || batchesPerLayer[suitableBatchIndex].isFull()) {
-            suitableBatchIndex += 1
-            if(suitableBatchIndex == batchesPerLayer.size) {
-                addNewBatch()
+    protected val batchesPerLayer: Array<MutableList<T>> = Array(DEFAULT_N_LAYERS) { mutableListOf() }
+    private var suitableBatchIndex : Array<Int> = Array(DEFAULT_N_LAYERS) { -1 }
+
+    fun getSuitableBatch(layer: Int): T {
+        if (batchesPerLayer[layer].isEmpty() || batchesPerLayer[layer][suitableBatchIndex[layer]].isFull()) {
+            suitableBatchIndex[layer] += 1
+            if(suitableBatchIndex[layer] == batchesPerLayer[layer].size) {
+                addNewBatch(layer)
             }
         }
-        return batchesPerLayer[suitableBatchIndex]
+        return batchesPerLayer[layer][suitableBatchIndex[layer]]
     }
 
     fun clearBatches() {
-        batchesPerLayer.forEach { it.clear() }
-        suitableBatchIndex = if(suitableBatchIndex == -1) -1 else 0
+        for(i in suitableBatchIndex.indices){
+            batchesPerLayer[i].forEach { it.clear() }
+            suitableBatchIndex[i] = if(suitableBatchIndex[i] == -1) -1 else 0
+        }
     }
 
-    abstract fun draw(uniforms: ShaderUniforms)
+    abstract fun draw(layer: Int, uniforms: ShaderUniforms)
 
-    protected abstract fun addNewBatch()
+    protected abstract fun addNewBatch(layer: Int)
 
 }

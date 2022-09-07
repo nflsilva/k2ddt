@@ -7,9 +7,10 @@ import org.lwjgl.opengl.GL11.*
 
 class ShapeBatchController(shader: ShapeShader) : RenderEntityBatchController<ShapeBatch>(shader) {
 
-    override fun draw(uniforms: ShaderUniforms) {
+    override fun draw(layer: Int, uniforms: ShaderUniforms) {
+        val batches = batchesPerLayer[layer]
         shader.bind()
-        for (batch in batchesPerLayer) {
+        for (batch in batches) {
             batch.bind()
             shader.updateUniforms(uniforms)
             glDrawElements(GL_TRIANGLES, batch.nIndexes, GL_UNSIGNED_INT, 0)
@@ -18,7 +19,7 @@ class ShapeBatchController(shader: ShapeShader) : RenderEntityBatchController<Sh
         shader.unbind()
     }
 
-    override fun addNewBatch() {
-        batchesPerLayer.add(ShapeBatch(DEFAULT_BATCH_SIZE))
+    override fun addNewBatch(layer: Int) {
+        batchesPerLayer[layer].add(ShapeBatch(DEFAULT_BATCH_SIZE))
     }
 }

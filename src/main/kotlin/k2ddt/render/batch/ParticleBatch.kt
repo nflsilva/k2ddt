@@ -11,7 +11,6 @@ class ParticleBatch(maxEntities: Int) :
         const val SIZE_INDEX = 1
         const val TYPE_INDEX = 2
         const val COLOR_INDEX = 3
-        const val LAYER_INDEX = 4
     }
 
     init {
@@ -19,14 +18,12 @@ class ParticleBatch(maxEntities: Int) :
         addFloatAttributeBuffer(SIZE_INDEX, 1)
         addIntAttributeBuffer(TYPE_INDEX, 1)
         addFloatAttributeBuffer(COLOR_INDEX, 4)
-        addIntAttributeBuffer(LAYER_INDEX, 1)
     }
 
     override fun addEntity(entity: Particle, transform: Transform) {
         if(isFull()) return
 
         addAttributeData(POSITION_INDEX, transform.position.x, transform.position.y)
-        addAttributeData(LAYER_INDEX, transform.layer)
         addAttributeData(SIZE_INDEX, entity.size)
         addAttributeData(TYPE_INDEX, entity.type.value)
         addAttributeData(COLOR_INDEX, entity.color.r, entity.color.g, entity.color.b, entity.color.a)

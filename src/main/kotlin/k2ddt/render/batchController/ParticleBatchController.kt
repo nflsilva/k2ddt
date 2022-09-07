@@ -6,9 +6,11 @@ import k2ddt.render.shader.ShaderUniforms
 import org.lwjgl.opengl.GL11.*
 
 class ParticleBatchController(shader: ParticleShader) : RenderEntityBatchController<ParticleBatch>(shader) {
-    override fun draw(uniforms: ShaderUniforms) {
+
+    override fun draw(layer: Int, uniforms: ShaderUniforms) {
+        val batches = batchesPerLayer[layer]
         shader.bind()
-        for (batch in batchesPerLayer) {
+        for (batch in batches) {
             batch.bind()
             shader.updateUniforms(uniforms)
             glDrawElements(GL_POINTS, batch.nIndexes, GL_UNSIGNED_INT, 0)
@@ -17,7 +19,7 @@ class ParticleBatchController(shader: ParticleShader) : RenderEntityBatchControl
         shader.unbind()
     }
 
-    override fun addNewBatch() {
-        batchesPerLayer.add(ParticleBatch(DEFAULT_BATCH_SIZE))
+    override fun addNewBatch(layer: Int) {
+        batchesPerLayer[layer].add(ParticleBatch(DEFAULT_BATCH_SIZE))
     }
 }
