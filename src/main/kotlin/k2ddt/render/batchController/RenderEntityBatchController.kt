@@ -9,7 +9,7 @@ abstract class RenderEntityBatchController<T : BaseBatch<*>>(
 ) {
 
     companion object {
-        const val DEFAULT_BATCH_SIZE: Int = 2
+        const val DEFAULT_BATCH_SIZE: Int = 20000
         const val DEFAULT_N_LAYERS: Int = 10
     }
 

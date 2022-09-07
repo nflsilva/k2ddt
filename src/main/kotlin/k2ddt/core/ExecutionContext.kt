@@ -24,35 +24,35 @@ class ExecutionContext(
         delegate?.executionContext = this
     }
 
-    fun start(){
+    fun start() {
         engine.start()
     }
 
-    fun render(
-        sprite: Sprite,
-        transform: Transform
-    ) {
+    fun setBackgroundColor(color: Color) {
+        graphics.setBackgroundColor(color)
+    }
+
+    fun moveCamera(deltaX: Float, deltaY: Float) {
+        graphics.moveCamera(deltaX, deltaY)
+    }
+
+    fun zoomCamera(amount: Float) {
+        graphics.zoomCamera(amount)
+    }
+
+    fun render(sprite: Sprite, transform: Transform) {
         graphics.render(sprite, transform)
     }
 
-    fun render(
-        shape: Shape,
-        transform: Transform
-    ) {
+    fun render(shape: Shape, transform: Transform) {
         graphics.render(shape, transform)
     }
 
-    fun render(
-        particle: Particle,
-        transform: Transform
-    ) {
+    fun render(particle: Particle, transform: Transform) {
         graphics.render(particle, transform)
     }
 
-    fun render(
-        text: Text,
-        transform: Transform
-    ) {
+    fun render(text: Text, transform: Transform) {
         graphics.render(text, transform)
     }
 

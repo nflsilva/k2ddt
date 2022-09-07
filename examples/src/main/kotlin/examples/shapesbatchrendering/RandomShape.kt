@@ -2,10 +2,7 @@ package examples.shapesbatchrendering
 
 import k2ddt.core.ExecutionContext
 import k2ddt.core.dto.UpdateContext
-import k2ddt.render.dto.Color
-import k2ddt.render.dto.Particle
-import k2ddt.render.dto.Sprite
-import k2ddt.render.dto.Transform
+import k2ddt.render.dto.*
 import org.joml.Random
 
 class RandomShape(
@@ -28,7 +25,7 @@ class RandomShape(
         layer,
         true
     )
-    private val shape = Sprite("/sprite/cube.png", color, 1.0f)
+    private val shape = Shape(Shape.Type.SQUARE, color)
 
     fun tick(updateContext: UpdateContext) {
         transform.translate(speed * updateContext.elapsedTime * direction, 0f)
@@ -37,7 +34,7 @@ class RandomShape(
         if (transform.position.x <= 0f || transform.position.x >= 1280f) {
             direction *= -1
         }
-        color.a -= 0.01f * directionColor
+        color.a -= 0.005f * directionColor
         if (color.a >= 1.0f || color.a <= 0.0f) {
             directionColor *= -1
         }

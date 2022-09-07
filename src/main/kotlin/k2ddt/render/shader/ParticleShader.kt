@@ -1,6 +1,7 @@
 package k2ddt.render.shader
 
-import org.lwjgl.opengl.GL11.*
+import org.lwjgl.opengl.GL11.glDisable
+import org.lwjgl.opengl.GL11.glEnable
 import org.lwjgl.opengl.GL20.GL_VERTEX_PROGRAM_POINT_SIZE
 
 class ParticleShader : BaseShader(VERTEX_SHADER, FRAGMENT_SHADER) {

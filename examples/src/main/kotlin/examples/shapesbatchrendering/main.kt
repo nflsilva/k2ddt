@@ -10,6 +10,7 @@ import k2ddt.render.dto.Transform
 import k2ddt.render.font.DefaultFont
 import k2ddt.render.model.BitmapFont
 import org.joml.Random
+import ui.dto.InputStateData
 
 private class Delegate : ExecutionDelegate() {
 
@@ -44,13 +45,13 @@ private class Delegate : ExecutionDelegate() {
         }
     }
     private fun setupLimits(){
-        val nShapes = 8
+        val nShapes = 16
         val size = 90f
         for (i in 0 until nShapes) {
             shapes.add(
                 RandomShape(
                     10f,
-                    size * i,
+                    size / 2f * i,
                     size,
                     colors[i % (colors.size - 1)],
                     2
@@ -83,6 +84,22 @@ private class Delegate : ExecutionDelegate() {
 
     override fun onUpdate(updateContext: UpdateContext) {
         shapes.forEach { it.tick(updateContext) }
+
+        if(updateContext.input.scrollY != 0){
+            executionContext.zoomCamera(updateContext.input.scrollY.toFloat() * 10f)
+        }
+        if(updateContext.input.isKeyPressed(InputStateData.KEY_A)){
+            executionContext.moveCamera(-10f, 0f)
+        }
+        else if(updateContext.input.isKeyPressed(InputStateData.KEY_D)){
+            executionContext.moveCamera(10f, 0f)
+        }
+        if(updateContext.input.isKeyPressed(InputStateData.KEY_W)){
+            executionContext.moveCamera(0f, 10f)
+        }
+        else if(updateContext.input.isKeyPressed(InputStateData.KEY_S)){
+            executionContext.moveCamera(0f, -10f)
+        }
     }
 
     override fun onFrame() {

@@ -1,10 +1,10 @@
 package k2ddt.ui
 
-import org.lwjgl.glfw.GLFW.glfwGetTime
 import k2ddt.core.EngineConfiguration
-import ui.dto.InputStateData
 import k2ddt.ui.input.Keyboard
 import k2ddt.ui.input.Mouse
+import org.lwjgl.glfw.GLFW.glfwGetTime
+import ui.dto.InputStateData
 
 class UIEngine(configuration: EngineConfiguration) {
 

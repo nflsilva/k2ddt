@@ -1,7 +1,7 @@
 package k2ddt.render.font
 
-import org.joml.Vector2f
 import k2ddt.render.model.BitmapFont
+import org.joml.Vector2f
 
 class DefaultFont(): BitmapFont(
     "/font/default.png",

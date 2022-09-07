@@ -1,11 +1,11 @@
 package k2ddt.tools
 
 import k2ddt.tools.dto.ImageData
-import org.lwjgl.BufferUtils
-import org.lwjgl.stb.STBImage.*
 import k2ddt.tools.dto.ShaderData
 import k2ddt.tools.exception.ErrorLoadingResourceException
 import k2ddt.tools.exception.ResourceNotFoundException
+import org.lwjgl.BufferUtils
+import org.lwjgl.stb.STBImage.*
 import java.io.BufferedInputStream
 import java.net.URL
 import java.nio.ByteBuffer

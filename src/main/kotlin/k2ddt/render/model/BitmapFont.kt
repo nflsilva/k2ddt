@@ -1,7 +1,7 @@
 package k2ddt.render.model
 
-import org.joml.Vector2f
 import k2ddt.render.dto.Sprite
+import org.joml.Vector2f
 
 open class BitmapFont(
     private val texture: Texture,

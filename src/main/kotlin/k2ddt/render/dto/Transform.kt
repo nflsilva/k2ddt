@@ -52,6 +52,18 @@ class Transform(
         }
     }
 
+    val left: Float
+        get() = position.x - if(centered) scale.x / 2f else 0f
+
+    val right: Float
+        get() = position.x + if(centered) scale.x / 2f else scale.x
+
+    val bottom: Float
+        get() = position.y - if(centered) scale.y / 2f else 0f
+
+    val top: Float
+        get() = position.y + if(centered) scale.y / 2f else scale.y
+
     /**
      * Translates current screen position by provided value
      *
