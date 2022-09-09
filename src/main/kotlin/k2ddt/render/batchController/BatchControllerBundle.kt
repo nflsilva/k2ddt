@@ -8,9 +8,10 @@ import org.joml.Vector2f
 
 class BatchControllerBundle(shaderBundle: ShaderBundle) {
 
-    private val spriteBatches: SpriteBatchController = SpriteBatchController(shaderBundle.spriteShader)
-    private val shapeBatches: ShapeBatchController = ShapeBatchController(shaderBundle.shapeShader)
-    private val particleBatches: ParticleBatchController = ParticleBatchController(shaderBundle.particleShader)
+    private val spriteBatches = SpriteBatchController(shaderBundle.spriteShader)
+    private val shapeBatches = ShapeBatchController(shaderBundle.shapeShader)
+    private val particleBatches = ParticleBatchController(shaderBundle.particleShader)
+    private val lineBatches = LineBatchController(shaderBundle.lineShader)
 
     fun addToSuitableBatch(data: Sprite, transform: Transform) {
         val suitableBatch = spriteBatches.getSuitableBatch(transform.layer)
@@ -68,12 +69,18 @@ class BatchControllerBundle(shaderBundle: ShaderBundle) {
         addToSuitableBatch(fullTextSprite, transform)
     }
 
+    fun addToSuitableBatch(data: Line, transform: Transform) {
+        val suitableBatch = lineBatches.getSuitableBatch(transform.layer)
+        suitableBatch.addEntity(data, transform)
+    }
+
     fun draw(uniforms: ShaderUniforms) {
         for(layer in 0 until RenderEntityBatchController.DEFAULT_N_LAYERS){
             val layerToDraw = RenderEntityBatchController.DEFAULT_N_LAYERS - layer - 1
             spriteBatches.draw(layerToDraw, uniforms)
             shapeBatches.draw(layerToDraw, uniforms)
             particleBatches.draw(layerToDraw, uniforms)
+            lineBatches.draw(layerToDraw, uniforms)
         }
     }
 
@@ -81,6 +88,7 @@ class BatchControllerBundle(shaderBundle: ShaderBundle) {
         spriteBatches.clearBatches()
         shapeBatches.clearBatches()
         particleBatches.clearBatches()
+        lineBatches.clearBatches()
     }
 
 }

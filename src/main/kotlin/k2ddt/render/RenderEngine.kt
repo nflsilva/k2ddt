@@ -93,6 +93,12 @@ class RenderEngine(private val screenWidth: Int, private val screenHeight: Int) 
         }
     }
 
+    fun render(line: Line, transform: Transform) {
+        if (isVisible(transform)) {
+            entityBatches.addToSuitableBatch(line, transform)
+        }
+    }
+
     private fun isVisible(transform: Transform): Boolean {
         return transform.right >= camera.left ||
                 transform.left <= camera.right ||

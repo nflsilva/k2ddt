@@ -1,4 +1,4 @@
-package examples.shapesbatchrendering
+package examples.randomrendering
 
 import k2ddt.core.ExecutionContext
 import k2ddt.core.dto.UpdateContext
@@ -16,7 +16,7 @@ class RandomShape(
     private val speed = 250f
     private var direction = if (Random().nextInt(2) == 0) -1 else 1
     private var directionColor = 1
-    private val transform = Transform(
+    val transform = Transform(
         positionX,
         positionY,
         0f,

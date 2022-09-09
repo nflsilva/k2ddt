@@ -1,12 +1,9 @@
-package examples.shapesbatchrendering
+package examples.randomrendering
 
 import k2ddt.core.ExecutionContext
 import k2ddt.core.ExecutionDelegate
 import k2ddt.core.dto.UpdateContext
-import k2ddt.render.dto.Color
-import k2ddt.render.dto.Sprite
-import k2ddt.render.dto.Text
-import k2ddt.render.dto.Transform
+import k2ddt.render.dto.*
 import k2ddt.render.font.DefaultFont
 import k2ddt.render.model.BitmapFont
 import org.joml.Random
@@ -28,6 +25,7 @@ private class Delegate : ExecutionDelegate() {
 
     lateinit var sprite: Sprite
     lateinit var font: BitmapFont
+    var xx = 0f
 
     private fun setupStress(){
         val nShapes = 16e6.toInt()
@@ -50,7 +48,7 @@ private class Delegate : ExecutionDelegate() {
         for (i in 0 until nShapes) {
             shapes.add(
                 RandomShape(
-                    10f,
+                    10f * Random().nextFloat() * 100f,
                     size / 2f * i,
                     size,
                     colors[i % (colors.size - 1)],
@@ -104,10 +102,24 @@ private class Delegate : ExecutionDelegate() {
 
     override fun onFrame() {
 
+        for(i in shapes.indices) {
+            if(i > 0 && i < shapes.size){
+
+                val s0 = shapes[i-1]
+                val s1 = shapes[i]
+                val line = Line(
+                    s0.transform.position,
+                    s1.transform.position,
+                    Color(1f)
+                )
+                executionContext.render(line, Transform(5))
+            }
+        }
         shapes.forEach { it.draw(executionContext) }
 
+        val ds = 5
         val size = 128f * 2
-        for(i in 0 until 5) {
+        for(i in 0 until ds) {
             val t0 = Transform(
                 i * size,
                 i * size,
@@ -115,7 +127,7 @@ private class Delegate : ExecutionDelegate() {
                 size,
                 size,
                 1 + i,
-                false)
+                true)
             executionContext.render(sprite, t0)
         }
 

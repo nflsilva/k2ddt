@@ -46,6 +46,8 @@ class Transform(
         centered: Boolean = false
     ) : this(Vector2f(positionX, positionY), rotation, Vector2f(scaleX, scaleY), layer, centered)
 
+    constructor(layer: Int) : this(0f, 0f, 0f, 1f, 1f, layer)
+
     init {
         if (layer < 0 || layer > 999) {
             throw IllegalArgumentException("Layer should be between 0 and 999")

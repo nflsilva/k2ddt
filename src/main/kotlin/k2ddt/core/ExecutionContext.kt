@@ -56,4 +56,8 @@ class ExecutionContext(
         graphics.render(text, transform)
     }
 
+    fun render(line: Line, transform: Transform) {
+        graphics.render(line, transform)
+    }
+
 }
