@@ -10,6 +10,7 @@ import org.joml.Math.abs
 import org.joml.Vector2f
 import ui.dto.InputStateData
 import java.lang.Float.max
+import java.lang.Float.min
 
 class Ball(
     centerX: Float,
@@ -29,7 +30,9 @@ class Ball(
         true
     )
     private var previousPosition = Vector2f(centerX, centerY)
+    private var velocity = Vector2f(0f)
     private var acceleration = Vector2f(0f)
+    private var drawConnections = false
 
     var x: Float
         get() = transform.position.x
@@ -50,37 +53,129 @@ class Ball(
     var line = Line(centerX, centerY, 0f, 0f, Color(1f))
     var lineTransform = Transform(0)
     var energy = 0.0f
-    var collisions : MutableList<Vector2f> = mutableListOf()
+    var maxEnergy = 1000f
+    var collisions: MutableList<Ball> = mutableListOf()
 
     fun tick(updateContext: UpdateContext) {
         collisions.clear()
         computePosition(updateContext.elapsedTime)
         handleInputs(updateContext.input)
+        computeColor()
+    }
+
+    fun heatUp(amount: Float) {
+        energy += amount
+        if (energy >= maxEnergy && acceleration.y <= 0) {
+            applyForce(Vector2f(0f, 300f * energy))
+        }
+
+    }
+
+    fun draw(context: ExecutionContext) {
+        context.render(Shape(Shape.Type.CIRCLE, color), transform)
+        if (isSelected) {
+            context.render(line, lineTransform)
+        }
+
+        if (drawConnections) {
+            collisions.forEach {
+                context.render(
+                    Line(transform.position, it.transform.position, Color(0f, 1f, 0f, 1f)), Transform(0)
+                )
+            }
+        }
+    }
+
+    fun collideWith(ball: Ball) {
+        computeStaticResolution(ball)
+        computeEnergyTransfer()
+        //computeDynamicResolution(ball)
+    }
+
+    fun applyForce(force: Vector2f) {
+        acceleration.add(Vector2f(force).div(mass))
+    }
+
+    fun applyAcceleration(acceleration: Vector2f) {
+        this.acceleration = Vector2f(acceleration)
+    }
+
+    private fun computeColor() {
+        color.r = energy * 25f / maxEnergy
+        color.g = energy * 5f / maxEnergy
+        color.b = energy * 1f / maxEnergy
+    }
+
+    private fun computeStaticResolution(ball: Ball) {
+        val distanceVector = Vector2f(ball.x - x, ball.y - y)
+        val distance = distanceVector.length()
+        val delta = distance - (ball.radius + radius)
+
+        if (delta < 0) {
+
+            val deltaTranslate = distanceVector
+                .normalize()
+                .mul(delta * 0.5f)
+
+            deltaTranslate.mul(0.5f)
+
+            x += deltaTranslate.x
+            y += deltaTranslate.y
+
+            ball.x -= deltaTranslate.x
+            ball.y -= deltaTranslate.y
+
+            collisions.add(ball)
+        }
+
+    }
+
+    private fun computeDynamicResolution(ball: Ball) {
+        val normal = Vector2f(ball.x - x, ball.y - y).normalize()
+        val tangent = Vector2f(normal.y, -normal.x)
+
+        val dpTan0 = Vector2f(velocity).dot(tangent)
+        val dpTan1 = Vector2f(ball.velocity).dot(tangent)
+
+        velocity = Vector2f(tangent).mul(dpTan0)
+        ball.velocity = Vector2f(tangent).mul(dpTan1)
+
+    }
+
+    private fun computeEnergyTransfer() {
+        for(ball in collisions) {
+            var energyDifference = energy - ball.energy
+            if (energyDifference == 0f) return
+
+            if (abs(energyDifference) < 1f) {
+                energyDifference /= 2
+            } else {
+                energyDifference = min(10f, energyDifference * 0.00025f)
+            }
+
+            energy -= energyDifference
+            ball.energy += energyDifference
+        }
     }
 
     private fun computePosition(deltaTime: Float) {
         val newPrevPosition = Vector2f(transform.position)
         val dtt = Vector2f(acceleration).mul(deltaTime * deltaTime)
 
-        val v = Vector2f(transform.position).sub(previousPosition).mul(0.99f)
-        transform.position.add(v).add(dtt)
+        velocity = Vector2f(transform.position)
+            .sub(previousPosition)
+            .mul(0.99f)
+
+        energy = max(
+            0f,
+            energy * 0.99f)
+
+        transform.position.add(velocity).add(dtt)
 
         previousPosition = newPrevPosition
 
         acceleration.zero()
 
-        if (transform.position.y <= 15f + radius) {
-            energy += 100f
-        }
-        else {
-            energy = max(0f, energy - 5f)
-        }
-
-        if (energy > 1000f && acceleration.y <= 0) {
-            applyForce(Vector2f(0f, energy * 50f))
-        }
-
-        color.r = energy * 0.001f
     }
 
     private fun handleInputs(input: InputStateData) {
@@ -108,57 +203,10 @@ class Ball(
             val mag = distanceToMouse.lengthSquared() * -50f
             applyForce(distanceToMouse.normalize().mul(mag))
         }
-    }
 
-    fun draw(context: ExecutionContext) {
-        context.render(Shape(Shape.Type.CIRCLE, color), transform)
-        if (isSelected) {
-            context.render(line, lineTransform)
-        }
-        collisions.forEach { context.render(
-            Line(transform.position, it, Color(0f, 1f, 0f, 1f)), Transform(0))
+        if (input.isKeyPressed(InputStateData.KEY_C)) {
+            drawConnections = !drawConnections
         }
     }
 
-    fun collideWith(ball: Ball) {
-        computeStaticCollision(ball)
-    }
-
-    private fun computeStaticCollision(ball: Ball) {
-        val distanceVector = Vector2f(ball.x - x, ball.y - y)
-        val distance = distanceVector.length()
-        val delta = distance - (ball.radius + radius)
-
-        if (delta < -0.5) {
-            val deltaTranslate = distanceVector.normalize().mul(delta / 2f)
-
-            x += deltaTranslate.x
-            y += deltaTranslate.y
-
-            ball.x -= deltaTranslate.x
-            ball.y -= deltaTranslate.y
-            //collisions.add(ball.transform.position)
-        } else if (abs(delta) < 0.5) {
-
-            if (energy > ball.energy) {
-                energy -= 35.0f
-                ball.energy += 35.0f
-                collisions.add(ball.transform.position)
-
-            } else if (energy < ball.energy) {
-                energy += 35.0f
-                ball.energy -= 35.0f
-                collisions.add(ball.transform.position)
-            }
-
-        }
-    }
-
-    fun applyForce(force: Vector2f) {
-        acceleration.add(Vector2f(force).div(mass))
-    }
-
-    fun applyAcceleration(acceleration: Vector2f) {
-        this.acceleration = Vector2f(acceleration)
-    }
 }

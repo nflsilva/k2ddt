@@ -40,6 +40,10 @@ class ExecutionContext(
         graphics.zoomCamera(amount)
     }
 
+    fun getProfileData(): ProfilingData {
+        return engine.getProfilingData()
+    }
+
     fun render(sprite: Sprite, transform: Transform) {
         graphics.render(sprite, transform)
     }

@@ -3,6 +3,7 @@ package k2ddt.core
 import k2ddt.core.dto.UpdateContext
 import k2ddt.render.RenderEngine
 import k2ddt.tools.Log
+import k2ddt.tools.Profiler
 import k2ddt.ui.UIEngine
 import ui.dto.InputStateData
 
@@ -19,8 +20,8 @@ class CoreEngine(
         private const val framePerSecondCap: Int = 500
     }
 
-    private var isRunning: Boolean = false
-
+    private val profiler = Profiler()
+    private var isRunning = false
     private val configuration: EngineConfiguration
 
     init {
@@ -61,12 +62,12 @@ class CoreEngine(
             }
 
             if (timeSincePrint >= printTime) {
-                Log.d("FramesPerSecond: $frames\t\tFrameTime: ${frameDelta * 1000}\t\tTicks: $ticks")
-                //Log.d("Camera: ${camera.position}")
+                profiler.framesPerSecond = frames
                 ticks = 0
                 frames = 0
                 timeSincePrint = 0.0
             }
+
             if (!uiEngine.isRunning()) {
                 isRunning = false
             }
@@ -83,16 +84,27 @@ class CoreEngine(
     }
 
     private fun onFrame() {
+
+        profiler.start("onFrame")
         uiEngine.onFrame()
         renderEngine.onFrame()
+        profiler.end("onFrame")
+
+        profiler.start("user onFrame")
         delegate?.onFrame()
+        profiler.end("user onFrame")
     }
 
     private fun onUpdate(elapsedTime: Double, input: InputStateData) {
+        profiler.start("onUpdate")
         val updateContext = UpdateContext(elapsedTime.toFloat(), input)
         uiEngine.onUpdate()
         renderEngine.onUpdate()
+        profiler.end("onUpdate")
+
+        profiler.start("user onUpdate")
         delegate?.onUpdate(updateContext)
+        profiler.end("user onUpdate")
     }
 
     private fun onCleanUp() {
@@ -107,6 +119,10 @@ class CoreEngine(
 
         isRunning = true
         run()
+    }
+
+    fun getProfilingData(): ProfilingData {
+        return profiler.getData()
     }
 
 }
