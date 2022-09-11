@@ -2,10 +2,12 @@ package k2ddt.tools
 
 import k2ddt.tools.dto.ImageData
 import k2ddt.tools.dto.ShaderData
+import k2ddt.tools.dto.SoundData
 import k2ddt.tools.exception.ErrorLoadingResourceException
 import k2ddt.tools.exception.ResourceNotFoundException
 import org.lwjgl.BufferUtils
 import org.lwjgl.stb.STBImage.*
+import org.lwjgl.stb.STBVorbis
 import java.io.BufferedInputStream
 import java.net.URL
 import java.nio.ByteBuffer
@@ -14,6 +16,7 @@ import java.nio.IntBuffer
 object ResourceManager {
 
     private val textures: MutableMap<String, ImageData> = mutableMapOf()
+    private val sounds: MutableMap<String, SoundData> = mutableMapOf()
     private val shaders: MutableMap<String, ShaderData> = mutableMapOf()
 
     //TODO: What a mess. Rethink about this.
@@ -75,6 +78,18 @@ object ResourceManager {
         val shaderData = ShaderData(resourceUrl.readText())
         shaders[fileName] = shaderData
         return shaderData
+    }
+
+    fun loadSoundFromFile(fileName: String): SoundData {
+        if(fileName in sounds.keys) { return sounds[fileName]!! }
+        val resourceUrl = getResourceURLFromFile(fileName)
+
+        val channels: IntBuffer = BufferUtils.createIntBuffer(1)
+        val sampleRate: IntBuffer = BufferUtils.createIntBuffer(1)
+
+        val data = STBVorbis.stb_vorbis_decode_filename(resourceUrl.path, channels, sampleRate)!!
+
+        return SoundData(channels.get(), sampleRate.get(), data)
     }
 
     private fun getResourceURLFromFile(fileName: String): URL {

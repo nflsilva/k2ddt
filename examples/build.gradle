@@ -54,6 +54,7 @@ dependencies {
     implementation "org.lwjgl:lwjgl-stb:$lwjglVersion"
     implementation "org.lwjgl:lwjgl-glfw"
     implementation "org.lwjgl:lwjgl-opengl"
+    implementation "org.lwjgl:lwjgl-openal"
     implementation "org.lwjgl:lwjgl-assimp"
     implementation "org.lwjgl:lwjgl-opengl"
     implementation files("../build/libs/k2ddt-0.0.1.jar")

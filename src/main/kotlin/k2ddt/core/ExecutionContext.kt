@@ -2,6 +2,8 @@ package k2ddt.core
 
 import k2ddt.render.RenderEngine
 import k2ddt.render.dto.*
+import k2ddt.sound.SoundEngine
+import k2ddt.sound.dto.Sound
 import k2ddt.ui.UIEngine
 
 class ExecutionContext(
@@ -12,6 +14,7 @@ class ExecutionContext(
 
     private val engine: CoreEngine
     private val graphics: RenderEngine
+    private val audio: SoundEngine
     private val ui: UIEngine
 
     init {
@@ -20,7 +23,8 @@ class ExecutionContext(
             configuration.resolutionHeight
         )
         ui = UIEngine(configuration)
-        engine = CoreEngine(configuration, graphics, ui, delegate)
+        audio = SoundEngine()
+        engine = CoreEngine(configuration, graphics, ui, audio, delegate)
         delegate?.executionContext = this
     }
 
@@ -64,4 +68,7 @@ class ExecutionContext(
         graphics.render(line, transform)
     }
 
+    fun playSound(sound: Sound) {
+        audio.playSound(sound)
+    }
 }

@@ -2,6 +2,7 @@ package k2ddt.core
 
 import k2ddt.core.dto.UpdateContext
 import k2ddt.render.RenderEngine
+import k2ddt.sound.SoundEngine
 import k2ddt.tools.Log
 import k2ddt.tools.Profiler
 import k2ddt.ui.UIEngine
@@ -11,6 +12,7 @@ class CoreEngine(
     configuration: EngineConfiguration? = null,
     private val renderEngine: RenderEngine,
     private val uiEngine: UIEngine,
+    private val soundEngine: SoundEngine,
     private val delegate: ExecutionDelegate? = null
 ) {
 
