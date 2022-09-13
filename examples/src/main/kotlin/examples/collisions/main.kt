@@ -35,6 +35,8 @@ private class Delegate : ExecutionDelegate() {
             }
         }
 
+        printProfiling()
+
     }
 
     override fun onFrame() {

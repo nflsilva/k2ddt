@@ -7,7 +7,7 @@ import k2ddt.render.dto.Line
 import k2ddt.render.dto.Shape
 import k2ddt.render.dto.Transform
 import org.joml.Vector2f
-import ui.dto.InputStateData
+import k2ddt.ui.dto.InputStateData
 
 class Ball(
     centerX: Float,

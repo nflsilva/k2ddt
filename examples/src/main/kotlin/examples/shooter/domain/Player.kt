@@ -7,7 +7,7 @@ import k2ddt.core.ExecutionContext
 import k2ddt.render.dto.Transform
 import k2ddt.render.model.AnimatedSprite
 import org.joml.Vector2f
-import ui.dto.InputStateData
+import k2ddt.ui.dto.InputStateData
 
 class Player(startX: Float, startY: Float) : Drawable(startX, startY, 0f, SIZE, SIZE, LAYER) {
 

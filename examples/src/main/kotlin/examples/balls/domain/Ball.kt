@@ -6,9 +6,9 @@ import k2ddt.render.dto.Color
 import k2ddt.render.dto.Line
 import k2ddt.render.dto.Shape
 import k2ddt.render.dto.Transform
+import k2ddt.ui.dto.InputStateData
 import org.joml.Math.abs
 import org.joml.Vector2f
-import ui.dto.InputStateData
 import java.lang.Float.max
 import java.lang.Float.min
 

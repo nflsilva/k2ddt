@@ -3,10 +3,9 @@ package k2ddt.core
 import k2ddt.core.dto.UpdateContext
 import k2ddt.render.RenderEngine
 import k2ddt.sound.SoundEngine
-import k2ddt.tools.Log
 import k2ddt.tools.Profiler
 import k2ddt.ui.UIEngine
-import ui.dto.InputStateData
+import k2ddt.ui.dto.InputStateData
 
 class CoreEngine(
     configuration: EngineConfiguration? = null,
@@ -23,6 +22,7 @@ class CoreEngine(
     }
 
     private val profiler = Profiler()
+    private var profilerData = profiler.getData()
     private var isRunning = false
     private val configuration: EngineConfiguration
 
@@ -52,7 +52,7 @@ class CoreEngine(
             frameStart = uiEngine.getTime()
 
             if (timeSinceTick >= tickTime) {
-                onUpdate(tickTime, uiEngine.getInputState())
+                onUpdate(tickTime)
                 ticks++
                 timeSinceTick = 0.0
             }
@@ -64,6 +64,7 @@ class CoreEngine(
             }
 
             if (timeSincePrint >= printTime) {
+
                 profiler.framesPerSecond = frames
                 ticks = 0
                 frames = 0
@@ -80,6 +81,7 @@ class CoreEngine(
             timeSinceFrame += frameDelta
             timeSincePrint += frameDelta
 
+            profilerData = profiler.getData()
         }
 
         onCleanUp()
@@ -92,21 +94,26 @@ class CoreEngine(
         renderEngine.onFrame()
         profiler.end("onFrame")
 
-        profiler.start("user onFrame")
+        profiler.start("[user] onFrame")
         delegate?.onFrame()
-        profiler.end("user onFrame")
+        profiler.end("[user] onFrame")
     }
 
-    private fun onUpdate(elapsedTime: Double, input: InputStateData) {
-        profiler.start("onUpdate")
-        val updateContext = UpdateContext(elapsedTime.toFloat(), input)
-        uiEngine.onUpdate()
-        renderEngine.onUpdate()
-        profiler.end("onUpdate")
+    private fun onUpdate(elapsedTime: Double) {
 
-        profiler.start("user onUpdate")
+        profiler.start("onUIUpdate")
+        val input = uiEngine.onUpdate()
+        val updateContext = UpdateContext(elapsedTime.toFloat(), input)
+        profiler.end("onUIUpdate")
+
+        profiler.start("onRenderUpdate")
+        renderEngine.onUpdate()
+        profiler.end("onRenderUpdate")
+
+
+        profiler.start("[user] onUpdate")
         delegate?.onUpdate(updateContext)
-        profiler.end("user onUpdate")
+        profiler.end("[user] onUpdate")
     }
 
     private fun onCleanUp() {
@@ -124,7 +131,7 @@ class CoreEngine(
     }
 
     fun getProfilingData(): ProfilingData {
-        return profiler.getData()
+        return profilerData
     }
 
 }

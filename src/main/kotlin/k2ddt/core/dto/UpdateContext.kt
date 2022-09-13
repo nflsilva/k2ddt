@@ -1,6 +1,6 @@
 package k2ddt.core.dto
 
-import ui.dto.InputStateData
+import k2ddt.ui.dto.InputStateData
 
 data class UpdateContext(
     val elapsedTime: Float,

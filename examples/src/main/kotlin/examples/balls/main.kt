@@ -10,7 +10,7 @@ import k2ddt.render.dto.Transform
 import k2ddt.tools.Log
 import org.joml.Random
 import org.joml.Vector2f
-import ui.dto.InputStateData
+import k2ddt.ui.dto.InputStateData
 
 private class Delegate : ExecutionDelegate() {
 
@@ -21,9 +21,11 @@ private class Delegate : ExecutionDelegate() {
     private val rightLimit = 800f
     private val bottomLimit = 10f
     private val topLimit = 700f
-    private var ticksSinceLastBall = 0
     private var ballSize = 10f
     private var lastPrint = 0.0
+    private var heatLocation = 1f
+    private val heatWindow = 100
+    private val heatEnergy = 10f
 
     override fun onStart() {
 
@@ -51,11 +53,11 @@ private class Delegate : ExecutionDelegate() {
             }
 
             if(ball0.y < (bottomLimit + ball0.radius * 8)) {
-                ball0.heatUp(10f)
+                ball0.heatUp(heatEnergy)
 
-                if(ball0.x < leftLimit + ((rightLimit-leftLimit) / 2 + 100) &&
-                    ball0.x > leftLimit + ((rightLimit-leftLimit) / 2 - 100)) {
-                    ball0.heatUp(10f)
+                val center = leftLimit + ((rightLimit-leftLimit) / 2) * heatLocation
+                if(ball0.x < center + heatWindow && ball0.x > center - heatWindow) {
+                    ball0.heatUp(heatEnergy)
                 }
             }
 
@@ -63,6 +65,7 @@ private class Delegate : ExecutionDelegate() {
         }
 
         handleInput(updateContext.input)
+        printProfiling()
 
     }
 
@@ -80,23 +83,16 @@ private class Delegate : ExecutionDelegate() {
         executionContext.render(
             Line(leftLimit, topLimit, rightLimit, topLimit, Color((1f))), Transform(1)
         )
-
-        printProfiling()
-
     }
 
     private fun handleInput(input: InputStateData) {
 
-        if (ticksSinceLastBall == 10) {
-            if (input.isKeyPressed(InputStateData.KEY_B)) {
-                addBall(input.mouseX.toFloat(), input.mouseY.toFloat())
-            }
-            if (input.isKeyPressed(InputStateData.KEY_SPACE)) {
-                spawnBallCollection()
-            }
-            ticksSinceLastBall = 0
+        if (input.isKeyPressed(InputStateData.KEY_B)) {
+            addBall(input.mouseX.toFloat(), input.mouseY.toFloat())
         }
-        ticksSinceLastBall += 1
+        if (input.isKeyPressed(InputStateData.KEY_SPACE)) {
+            spawnBallCollection()
+        }
 
         if (input.scrollY != 0) {
             executionContext.zoomCamera(input.scrollY.toFloat() * 10f)
@@ -110,6 +106,12 @@ private class Delegate : ExecutionDelegate() {
             executionContext.moveCamera(0f, 10f)
         } else if (input.isKeyPressed(InputStateData.KEY_S)) {
             executionContext.moveCamera(0f, -10f)
+        }
+
+        if (input.isKeyPressed(InputStateData.KEY_J)) {
+            heatLocation -= 0.1f
+        } else if (input.isKeyPressed(InputStateData.KEY_K)) {
+            heatLocation += 0.1f
         }
     }
 

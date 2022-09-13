@@ -1,10 +1,10 @@
 package k2ddt.ui
 
 import k2ddt.core.EngineConfiguration
+import k2ddt.ui.dto.InputStateData
 import k2ddt.ui.input.Keyboard
 import k2ddt.ui.input.Mouse
 import org.lwjgl.glfw.GLFW.glfwGetTime
-import ui.dto.InputStateData
 
 class UIEngine(configuration: EngineConfiguration) {
 
@@ -33,16 +33,14 @@ class UIEngine(configuration: EngineConfiguration) {
         return window.isOpen()
     }
 
-    fun getInputState(): InputStateData {
-        return InputStateData(keyboard, mouse)
-    }
-
     fun onFrame() {
         window.onFrame()
     }
 
-    fun onUpdate() {
+    fun onUpdate(): InputStateData {
+        keyboard.onUpdate()
         mouse.onUpdate()
         window.onUpdate()
+        return InputStateData(keyboard, mouse)
     }
 }

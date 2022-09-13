@@ -7,7 +7,7 @@ import k2ddt.render.dto.*
 import k2ddt.render.font.DefaultFont
 import k2ddt.render.model.BitmapFont
 import org.joml.Random
-import ui.dto.InputStateData
+import k2ddt.ui.dto.InputStateData
 
 private class Delegate : ExecutionDelegate() {
 
