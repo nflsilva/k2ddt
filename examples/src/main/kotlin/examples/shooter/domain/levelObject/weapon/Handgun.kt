@@ -1,7 +1,7 @@
-package examples.game.domain.levelObject.weapon
+package examples.shooter.domain.levelObject.weapon
 
-import examples.game.domain.GameUpdateContext
-import examples.game.domain.levelObject.Drawable
+import examples.shooter.domain.GameUpdateContext
+import examples.shooter.domain.levelObject.Drawable
 import k2ddt.core.ExecutionContext
 import k2ddt.sound.dto.Sound
 import org.joml.Matrix2f
@@ -19,7 +19,7 @@ class Handgun(parent: Drawable) :
     ) {
 
     companion object {
-        const val BULLETS_PER_MINUTE = 200
+        const val BULLETS_PER_MINUTE = 400
         const val WEAPON_OFFSET = 32f
     }
 
@@ -49,6 +49,7 @@ class Handgun(parent: Drawable) :
             direction = it.direction
         }
         activeBullets.forEach { it.onUpdate(context) }
+        activeBullets.removeIf { it.toRemove }
         timeSinceLastBullet += context.baseContext.elapsedTime
     }
 

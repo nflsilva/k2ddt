@@ -1,6 +1,6 @@
-package examples.game.domain.level
+package examples.shooter.domain.level
 
-import examples.game.domain.levelObject.Drawable
+import examples.shooter.domain.levelObject.Drawable
 import k2ddt.core.ExecutionContext
 import k2ddt.core.dto.UpdateContext
 import k2ddt.render.dto.Color
@@ -9,11 +9,15 @@ class Level(
     private val width: Int,
     private val height: Int,
     val blockSize: Float,
-    private val map: List<Drawable?>
+    private val map: MutableList<Drawable?>
 ) {
 
-    fun hasCollisionAt(row: Int, column: Int): Boolean {
-        return map[((height - 1) - row) * width + column]?.hasCollision ?: false
+    fun hasCollisionAt(row: Int, column: Int): Drawable? {
+        val d = map[((height - 1) - row) * width + column]
+        if(d?.hasCollision == true) {
+            return d
+        }
+        return null
     }
 
     fun update(context: UpdateContext) {

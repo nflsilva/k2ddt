@@ -1,10 +1,9 @@
-package examples.game.domain
+package examples.shooter.domain
 
-import examples.game.domain.level.Level
-import examples.game.domain.levelObject.Drawable
-import examples.game.domain.levelObject.weapon.Handgun
+import examples.shooter.domain.level.Level
+import examples.shooter.domain.levelObject.Drawable
+import examples.shooter.domain.levelObject.weapon.Handgun
 import k2ddt.core.ExecutionContext
-import k2ddt.render.dto.Sprite
 import k2ddt.render.dto.Transform
 import k2ddt.render.model.AnimatedSprite
 import org.joml.Vector2f
@@ -19,48 +18,34 @@ class Player(startX: Float, startY: Float) : Drawable(startX, startY, 0f, SIZE, 
         const val LAYER = 1
     }
 
+    private var activeSprite: AnimatedSprite
+
     private val shootSprite: AnimatedSprite
     private val moveSprite: AnimatedSprite
     private val idleSprite: AnimatedSprite
 
     private val feetRunSprite: AnimatedSprite
-    private val feetWalkSprite: AnimatedSprite
 
-    private var moving = false
     private var speed = RUN_SPEED
     private val weapon: Handgun = Handgun(this)
 
+    //TODO: Rethink this mess. Maybe use a state machine?
     init {
-        shootSprite = loadSprites(3, "/sprite/soldier/handgun/shoot/survivor-shoot_handgun_%d.png")
-        idleSprite = loadSprites(20, "/sprite/soldier/handgun/idle/survivor-idle_handgun_%d.png")
-        moveSprite = loadSprites(20, "/sprite/soldier/handgun/move/survivor-move_handgun_%d.png")
+        shootSprite = AnimatedSprite.fromCollection(3, "/sprite/soldier/handgun/shoot/survivor-shoot_handgun_%d.png")
+        idleSprite = AnimatedSprite.fromCollection(20, "/sprite/soldier/handgun/idle/survivor-idle_handgun_%d.png")
+        moveSprite = AnimatedSprite.fromCollection(20, "/sprite/soldier/handgun/move/survivor-move_handgun_%d.png")
+        feetRunSprite = AnimatedSprite.fromCollection(20, "/sprite/soldier/feet/run/survivor-run_%d.png")
 
-        feetRunSprite = loadSprites(20, "/sprite/soldier/feet/run/survivor-run_%d.png")
-        feetWalkSprite = loadSprites(20, "/sprite/soldier/feet/walk/survivor-walk_%d.png")
+        activeSprite = idleSprite
 
         transform.centered = true
         childen.add(weapon)
     }
 
-    private fun loadSprites(nSprites: Int, basePath: String): AnimatedSprite {
-        val frames = mutableListOf<AnimatedSprite.Keyframe>()
-        for (k in 0 until nSprites) {
-            frames.add(
-                AnimatedSprite.Keyframe(
-                    Sprite(String.format(basePath, k)),
-                    0.01f
-                ),
-            )
-        }
-        return AnimatedSprite(frames)
-    }
-
     fun update(context: GameUpdateContext) {
         super.onUpdate(context)
         handleInput(context.baseContext.input, context.baseContext.elapsedTime, context.level)
-        idleSprite.update(context.baseContext)
-        moveSprite.update(context.baseContext)
-        feetRunSprite.update(context.baseContext)
+        activeSprite.update(context.baseContext)
     }
 
     fun draw(context: ExecutionContext) {
@@ -73,12 +58,7 @@ class Player(startX: Float, startY: Float) : Drawable(startX, startY, 0f, SIZE, 
             transform.layer + 1,
             centered = true
         )
-        if (moving) {
-            context.render(feetRunSprite.getCurrentSprite(), feetTransform)
-            context.render(moveSprite.getCurrentSprite(), transform)
-        } else {
-            context.render(idleSprite.getCurrentSprite(), transform)
-        }
+        context.render(activeSprite.getCurrentSprite(), transform)
     }
 
     private fun handleInput(input: InputStateData, deltaTime: Float, level: Level) {
@@ -86,8 +66,7 @@ class Player(startX: Float, startY: Float) : Drawable(startX, startY, 0f, SIZE, 
         val isWalking = input.isKeyPressed(InputStateData.KEY_LEFT_SHIFT)
         speed = if (isWalking) WALK_SPEED else RUN_SPEED
 
-        moving = false
-
+        var moving = false
         if (input.isKeyPressed(InputStateData.KEY_W)) {
             transform.position.y += speed * deltaTime
             handleTopCollision(level)
@@ -97,7 +76,6 @@ class Player(startX: Float, startY: Float) : Drawable(startX, startY, 0f, SIZE, 
             handleBottomCollision(level)
             moving = true
         }
-
         if (input.isKeyPressed(InputStateData.KEY_A)) {
             transform.position.x += -speed * deltaTime
             handleLeftCollision(level)
@@ -108,7 +86,17 @@ class Player(startX: Float, startY: Float) : Drawable(startX, startY, 0f, SIZE, 
             moving = true
         }
 
-        if (input.isMousePressed(InputStateData.BUTTON_RIGHT)) {
+        if(moving && activeSprite != moveSprite) {
+            moveSprite.reset()
+            activeSprite = moveSprite
+        }
+        else if(!moving || activeSprite.ended) {
+            activeSprite = idleSprite
+        }
+
+        if (input.isMousePressed(InputStateData.BUTTON_RIGHT) && activeSprite != shootSprite) {
+            shootSprite.reset()
+            activeSprite = shootSprite
             weapon.fire()
         }
 
@@ -129,7 +117,7 @@ class Player(startX: Float, startY: Float) : Drawable(startX, startY, 0f, SIZE, 
         val leftBlockX = (left / level.blockSize).toInt()
 
         for (n in 0 until nSizes) {
-            if (level.hasCollisionAt(topBlockY, leftBlockX + n)) {
+            if (level.hasCollisionAt(topBlockY, leftBlockX + n) != null) {
                 transform.position.y = topBlockY * level.blockSize - r
             }
         }
@@ -146,7 +134,7 @@ class Player(startX: Float, startY: Float) : Drawable(startX, startY, 0f, SIZE, 
         val leftBlockX = (left / level.blockSize).toInt()
 
         for (n in 0 until nSizes) {
-            if (level.hasCollisionAt(bottomBlockY, leftBlockX + n)) {
+            if (level.hasCollisionAt(bottomBlockY, leftBlockX + n) != null) {
                 transform.position.y = bottomBlockY * level.blockSize + level.blockSize + r
             }
         }
@@ -163,7 +151,7 @@ class Player(startX: Float, startY: Float) : Drawable(startX, startY, 0f, SIZE, 
         val leftBlockX = (left / level.blockSize).toInt()
 
         for (n in 0 until nSizes) {
-            if (level.hasCollisionAt(bottomBlockY + n, leftBlockX)) {
+            if (level.hasCollisionAt(bottomBlockY + n, leftBlockX) != null) {
                 transform.position.x = leftBlockX * level.blockSize + level.blockSize + r
             }
         }
@@ -180,7 +168,7 @@ class Player(startX: Float, startY: Float) : Drawable(startX, startY, 0f, SIZE, 
         val rightBlockX = (right / level.blockSize).toInt()
 
         for (n in 0 until nSizes) {
-            if (level.hasCollisionAt(bottomBlockY + n, rightBlockX)) {
+            if (level.hasCollisionAt(bottomBlockY + n, rightBlockX) != null) {
                 transform.position.x = rightBlockX * level.blockSize - r
             }
         }

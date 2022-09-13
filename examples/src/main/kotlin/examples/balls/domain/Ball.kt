@@ -1,4 +1,4 @@
-package examples.balls.`object`
+package examples.balls.domain
 
 import k2ddt.core.ExecutionContext
 import k2ddt.core.dto.UpdateContext
@@ -15,8 +15,7 @@ import java.lang.Float.min
 class Ball(
     centerX: Float,
     centerY: Float,
-    val mass: Float,
-    color: Color
+    val mass: Float
 ) {
 
     private val color = Color(0.0f, 0.0f, 0.0f, 1.0f)
@@ -54,6 +53,7 @@ class Ball(
     var lineTransform = Transform(0)
     var energy = 0.0f
     var maxEnergy = 1000f
+    var multiplier = 600f
     var collisions: MutableList<Ball> = mutableListOf()
 
     fun tick(updateContext: UpdateContext) {
@@ -66,9 +66,8 @@ class Ball(
     fun heatUp(amount: Float) {
         energy += amount
         if (energy >= maxEnergy && acceleration.y <= 0) {
-            applyForce(Vector2f(0f, 300f * energy))
+            applyForce(Vector2f(0f, multiplier * energy))
         }
-
     }
 
     fun draw(context: ExecutionContext) {
@@ -89,7 +88,7 @@ class Ball(
     fun collideWith(ball: Ball) {
         computeStaticResolution(ball)
         computeEnergyTransfer()
-        //computeDynamicResolution(ball)
+        computeDynamicResolution(ball)
     }
 
     fun applyForce(force: Vector2f) {
@@ -207,6 +206,14 @@ class Ball(
         if (input.isKeyPressed(InputStateData.KEY_C)) {
             drawConnections = !drawConnections
         }
+
+        if(input.isKeyPressed(InputStateData.KEY_G)) {
+            multiplier += 100f
+        }
+        if(input.isKeyPressed(InputStateData.KEY_B)) {
+            multiplier -= 100f
+        }
+
     }
 
 }

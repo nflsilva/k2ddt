@@ -1,9 +1,9 @@
-package examples.game
+package examples.shooter
 
-import examples.game.domain.GameUpdateContext
-import examples.game.domain.Player
-import examples.game.domain.level.Level
-import examples.game.domain.level.LevelLoader
+import examples.shooter.domain.GameUpdateContext
+import examples.shooter.domain.Player
+import examples.shooter.domain.level.Level
+import examples.shooter.domain.level.LevelLoader
 import k2ddt.core.ExecutionContext
 import k2ddt.core.ExecutionDelegate
 import k2ddt.core.dto.UpdateContext
@@ -16,7 +16,8 @@ private class Delegate : ExecutionDelegate() {
     private lateinit var level: Level
 
     override fun onStart() {
-        player = Player(32f * 4 * 3, 32f * 4 * 2.5f)
+        player = Player(32f * 4, 32f * 4)
+        //npc = NPC(32f * 4 * 3, 32f * 4 * 2.5f)
         val ll = LevelLoader()
         level = ll.loadLevel()
 
@@ -30,14 +31,13 @@ private class Delegate : ExecutionDelegate() {
         val context = GameUpdateContext(updateContext, level)
         player.update(context)
         level.update(updateContext)
-
-
-
+        //npc.onUpdate(context)
     }
 
     override fun onFrame() {
         player.draw(executionContext)
         level.draw(executionContext)
+        //npc.draw(executionContext)
     }
 }
 

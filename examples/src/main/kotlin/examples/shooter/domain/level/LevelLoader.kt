@@ -1,7 +1,8 @@
-package examples.game.domain.level
+package examples.shooter.domain.level
 
-import examples.game.domain.levelObject.Drawable
-import examples.game.domain.levelObject.scenery.Wall
+import examples.shooter.domain.NPC
+import examples.shooter.domain.levelObject.Drawable
+import examples.shooter.domain.levelObject.scenery.Wall
 
 class LevelLoader {
 
@@ -29,7 +30,7 @@ class LevelLoader {
 
         1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 1, 1, 1, 0, 0, 0, 0, 0, 1,
         1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1,
-        1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1,
+        1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 0, 0, 1,
         1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1,
         1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
     )
@@ -54,6 +55,7 @@ class LevelLoader {
     private fun createLevelObjectFromId(x: Float, y: Float, id: Int): Drawable? {
         return when (id) {
             1 -> Wall(x, y, BLOCK_SIZE)
+            2 -> NPC(x, y)
             else -> null
         }
     }

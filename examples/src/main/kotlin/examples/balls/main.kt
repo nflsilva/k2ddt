@@ -1,6 +1,6 @@
 package examples.balls
 
-import examples.balls.`object`.Ball
+import examples.balls.domain.Ball
 import k2ddt.core.ExecutionContext
 import k2ddt.core.ExecutionDelegate
 import k2ddt.core.dto.UpdateContext
@@ -114,7 +114,7 @@ private class Delegate : ExecutionDelegate() {
     }
 
     private fun addBall(createX: Float, createY: Float) {
-        val b = Ball(createX, createY, ballSize, Color(1f))
+        val b = Ball(createX, createY, ballSize)
         balls.add(b)
     }
 

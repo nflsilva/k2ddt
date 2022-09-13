@@ -1,6 +1,6 @@
-package examples.game.domain.levelObject
+package examples.shooter.domain.levelObject
 
-import examples.game.domain.GameUpdateContext
+import examples.shooter.domain.GameUpdateContext
 import k2ddt.core.ExecutionContext
 import k2ddt.render.dto.Transform
 import org.joml.Vector2f
@@ -45,6 +45,10 @@ abstract class Drawable(
 
     open fun onUpdate(context: GameUpdateContext) {
         childen.forEach { it.onUpdate(context) }
+    }
+
+    open fun onHit() {
+        childen.forEach { it.onHit() }
     }
 
 }

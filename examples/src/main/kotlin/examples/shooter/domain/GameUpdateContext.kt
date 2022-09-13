@@ -1,6 +1,6 @@
-package examples.game.domain
+package examples.shooter.domain
 
-import examples.game.domain.level.Level
+import examples.shooter.domain.level.Level
 import k2ddt.core.dto.UpdateContext
 
 data class GameUpdateContext(
