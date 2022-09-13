@@ -5,9 +5,12 @@ import k2ddt.ui.input.Mouse
 
 class InputStateData(keyboard: Keyboard, mouse: Mouse) {
 
-    private val pressedKeys: MutableSet<Int> = mutableSetOf<Int>().apply { addAll(keyboard.pressedKeys) }
-    private val holdKeys: MutableSet<Int> = mutableSetOf<Int>().apply { addAll(keyboard.holdKeys) }
-    private val pressedButtons: MutableSet<Int> = mutableSetOf<Int>().apply { addAll( mouse.pressedButtons ) }
+    private val pressedKeys = keyboard.pressedKeys
+    private val holdKeys = keyboard.holdKeys
+
+    private val pressedButtons = mouse.pressedButtons
+    private val holdButtons = mouse.pressedButtons
+
     val mouseX: Int = mouse.positionX
     val mouseY: Int = mouse.positionY
     var dragDeltaX: Int = mouse.dragDeltaX
@@ -25,6 +28,10 @@ class InputStateData(keyboard: Keyboard, mouse: Mouse) {
 
     fun isMousePressed(button: Int): Boolean {
         return pressedButtons.contains(button)
+    }
+
+    fun isMouseHold(button: Int): Boolean {
+        return holdButtons.contains(button)
     }
 
     companion object {

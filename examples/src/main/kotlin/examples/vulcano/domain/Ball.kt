@@ -1,4 +1,4 @@
-package examples.balls.domain
+package examples.vulcano.domain
 
 import k2ddt.core.ExecutionContext
 import k2ddt.core.dto.UpdateContext

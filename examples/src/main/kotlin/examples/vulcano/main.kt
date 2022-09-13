@@ -1,6 +1,6 @@
-package examples.balls
+package examples.vulcano
 
-import examples.balls.domain.Ball
+import examples.vulcano.domain.Ball
 import k2ddt.core.ExecutionContext
 import k2ddt.core.ExecutionDelegate
 import k2ddt.core.dto.UpdateContext
@@ -100,7 +100,8 @@ private class Delegate : ExecutionDelegate() {
         if (input.isKeyPressed(InputStateData.KEY_A)) {
             executionContext.moveCamera(-10f, 0f)
         } else if (input.isKeyPressed(InputStateData.KEY_D)) {
-            executionContext.moveCamera(10f, 0f)
+            executionContext.moveCamera(10f,
+                0f)
         }
         if (input.isKeyPressed(InputStateData.KEY_W)) {
             executionContext.moveCamera(0f, 10f)

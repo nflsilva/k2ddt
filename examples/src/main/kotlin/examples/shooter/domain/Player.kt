@@ -67,20 +67,20 @@ class Player(startX: Float, startY: Float) : Drawable(startX, startY, 0f, SIZE, 
         speed = if (isWalking) WALK_SPEED else RUN_SPEED
 
         var moving = false
-        if (input.isKeyPressed(InputStateData.KEY_W)) {
+        if (input.isKeyHold(InputStateData.KEY_W)) {
             transform.position.y += speed * deltaTime
             handleTopCollision(level)
             moving = true
-        } else if (input.isKeyPressed(InputStateData.KEY_S)) {
+        } else if (input.isKeyHold(InputStateData.KEY_S)) {
             transform.position.y += -speed * deltaTime
             handleBottomCollision(level)
             moving = true
         }
-        if (input.isKeyPressed(InputStateData.KEY_A)) {
+        if (input.isKeyHold(InputStateData.KEY_A)) {
             transform.position.x += -speed * deltaTime
             handleLeftCollision(level)
             moving = true
-        } else if (input.isKeyPressed(InputStateData.KEY_D)) {
+        } else if (input.isKeyHold(InputStateData.KEY_D)) {
             transform.position.x += speed * deltaTime
             handleRightCollision(level)
             moving = true

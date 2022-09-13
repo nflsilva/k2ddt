@@ -1,4 +1,4 @@
-package examples.randomrendering
+package examples.mashup
 
 import k2ddt.core.ExecutionContext
 import k2ddt.core.ExecutionDelegate

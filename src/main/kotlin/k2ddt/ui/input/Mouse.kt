@@ -7,6 +7,7 @@ import org.lwjgl.glfw.GLFW.GLFW_RELEASE
 class Mouse(window: Long) {
 
     val pressedButtons: MutableSet<Int> = mutableSetOf()
+    val holdButtons: MutableSet<Int> = mutableSetOf()
     private var isHold: Boolean = false
     var positionX = 0
     var positionY = 0
@@ -37,6 +38,10 @@ class Mouse(window: Long) {
     fun onUpdate() {
         scrollX = 0
         scrollY = 0
+        for(k in pressedButtons) {
+            holdButtons.add(k)
+        }
+        pressedButtons.clear()
     }
 
     private fun onCursorChange(mouseX: Double, mouseY: Double) {
