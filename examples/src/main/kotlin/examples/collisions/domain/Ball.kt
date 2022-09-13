@@ -120,7 +120,9 @@ class Ball(
         line.endPoint.x = input.mouseX.toFloat()
         line.endPoint.y = input.mouseY.toFloat()
 
-        if (input.isMousePressed(InputStateData.BUTTON_RIGHT)) {
+        if (input.isMouseHold(InputStateData.BUTTON_LEFT)) {
+
+            println("HOLD!")
 
             if (isSelected) return
 

@@ -69,6 +69,7 @@ class Mouse(window: Long) {
             }
             GLFW_RELEASE -> {
                 pressedButtons.remove(button)
+                holdButtons.remove(button)
                 dragDeltaX = 0
                 dragDeltaY = 0
                 isHold = false

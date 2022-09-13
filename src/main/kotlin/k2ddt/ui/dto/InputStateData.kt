@@ -9,7 +9,7 @@ class InputStateData(keyboard: Keyboard, mouse: Mouse) {
     private val holdKeys = keyboard.holdKeys
 
     private val pressedButtons = mouse.pressedButtons
-    private val holdButtons = mouse.pressedButtons
+    private val holdButtons = mouse.holdButtons
 
     val mouseX: Int = mouse.positionX
     val mouseY: Int = mouse.positionY
