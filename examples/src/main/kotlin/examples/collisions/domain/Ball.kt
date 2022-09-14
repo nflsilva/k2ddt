@@ -20,8 +20,8 @@ class Ball(
         centerX,
         centerY,
         0f,
-        radius * 2f,
-        radius * 2f,
+        radius,
+        radius,
         1,
         true
     )

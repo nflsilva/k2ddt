@@ -11,7 +11,7 @@ class EngineConfiguration(var windowTitle: String,
                 "k2ddt",
                 1280,
                 720,
-                true)
+                false)
         }
     }
 }
