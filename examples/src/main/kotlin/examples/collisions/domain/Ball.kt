@@ -2,17 +2,16 @@ package examples.collisions.domain
 
 import k2ddt.core.ExecutionContext
 import k2ddt.core.dto.UpdateContext
-import k2ddt.render.dto.Color
-import k2ddt.render.dto.Line
-import k2ddt.render.dto.Shape
-import k2ddt.render.dto.Transform
-import org.joml.Vector2f
+import k2ddt.render.dto.*
+import k2ddt.render.font.DefaultFont
 import k2ddt.ui.dto.InputStateData
+import org.joml.Vector2f
+import java.text.DecimalFormat
 
 class Ball(
     centerX: Float,
     centerY: Float,
-    val mass: Float,
+    private val mass: Float,
     color: Color
 ) {
 
@@ -27,8 +26,10 @@ class Ball(
         true
     )
     private var p0 = Vector2f(centerX, centerY)
-    private var dt0 : Float = -1f
+    private var dt0: Float = -1f
     private var acceleration = Vector2f(0f)
+    private var velocity = Vector2f(0f)
+    private var computeVelocity = true
 
     var x: Float
         get() = transform.position.x
@@ -42,13 +43,15 @@ class Ball(
             transform.position.y = value
         }
 
-    val radius: Float
+    private val radius: Float
         get() = mass
 
-    var isSelected = false
-    var line = Line(centerX, centerY, 0f, 0f, Color(1f))
-    var lineTransform = Transform(0)
-    var collisions: MutableList<Ball> = mutableListOf()
+    private var isSelected = false
+    private var line = Line(centerX, centerY, 0f, 0f, Color(1f, 0f, 0f, 1f))
+    private var lineTransform = Transform(0)
+    private var collisions: MutableList<Ball> = mutableListOf()
+    private var defaultFont = DefaultFont()
+    private val dec = DecimalFormat("##.##")
 
     fun tick(updateContext: UpdateContext) {
         collisions.clear()
@@ -58,9 +61,9 @@ class Ball(
 
     fun draw(context: ExecutionContext) {
         context.render(Shape(Shape.Type.CIRCLE, color), transform)
-        if (isSelected) {
-            context.render(line, lineTransform)
-        }
+        drawVelocity(context)
+
+        drawForceLine(context)
 
         collisions.forEach {
             context.render(
@@ -69,7 +72,77 @@ class Ball(
         }
     }
 
+    private fun drawVelocity(context: ExecutionContext) {
+        val text = "${dec.format(velocity.x)} : ${dec.format(velocity.y)}"
+        context.render(
+            Text(text, defaultFont),
+            Transform(
+                transform.position.x + 100f,
+                transform.position.y + 50f,
+                0f,
+                text.length * 5f,
+                5f,
+                0
+            )
+        )
+    }
+
+    private fun drawForceLine(context: ExecutionContext) {
+        if (isSelected) {
+            context.render(line, lineTransform)
+        }
+    }
+
     fun collideWith(ball: Ball) {
+
+        val distanceVector = Vector2f(ball.x - x, ball.y - y)
+        val distance = distanceVector.length()
+        val delta = distance - (ball.radius + radius)
+
+        if (delta < 0) {
+            val x2 = Vector2f(ball.transform.position)
+            val v2 = Vector2f(ball.velocity)
+            val m2 = ball.mass
+
+            ball.computeNewSpeed(Vector2f(transform.position), Vector2f(velocity), mass, distance * distance)
+            computeNewSpeed(x2, v2, m2, distance * distance)
+        }
+    }
+
+    fun collideWith(wall: Wall) {
+
+        val left = x - radius
+        val right = x + radius
+        val top = y + radius
+        val bottom = y - radius
+
+        if ((left < wall.right && right > wall.right) ||
+            (right > wall.left && left < wall.left)
+        ) {
+            velocity = Vector2f(-velocity.x, velocity.y)
+            computeVelocity = false
+        } else if (
+            (top > wall.bottom && bottom < wall.bottom) ||
+            (bottom < wall.top && top > wall.top)
+        ) {
+            velocity = Vector2f(velocity.x, -velocity.y)
+            computeVelocity = false
+        }
+    }
+
+    private fun computeNewSpeed(x2: Vector2f, v2: Vector2f, m2: Float, distance2: Float) {
+
+        val massAux = 2 * m2 / (mass + m2)
+
+        val crossAux0 = Vector2f(velocity).sub(v2)
+        val crossAux1 = Vector2f(transform.position).sub(x2)
+        val crossAux = crossAux0.dot(crossAux1) / distance2
+
+        val distanceAux = Vector2f(crossAux1)
+
+        val bigAux = distanceAux.mul(massAux * crossAux)
+        velocity.sub(bigAux)
+        computeVelocity = false
 
     }
 
@@ -83,7 +156,7 @@ class Ball(
 
     private fun computePosition(deltaTime: Float) {
 
-        if(dt0 == -1f) {
+        if (dt0 == -1f) {
             dt0 = deltaTime
             return
         }
@@ -95,14 +168,19 @@ class Ball(
 
         val newPrevPosition = Vector2f(transform.position)
 
-        val xx0dt = Vector2f(transform.position)
-            .sub(p0)
+        if (computeVelocity) {
+            velocity = Vector2f(transform.position).sub(p0)
+        }
+        computeVelocity = true
+
+        val xx0dt = Vector2f(velocity)
             .mul(deltaTime)
             .div(dt0)
 
         val adtdtdt0 = Vector2f(acceleration)
             .mul(deltaTime)
             .mul((deltaTime + dt0) / 2)
+
 
 
         transform.position.add(xx0dt).add(adtdtdt0)
@@ -121,8 +199,6 @@ class Ball(
         line.endPoint.y = input.mouseY.toFloat()
 
         if (input.isMouseHold(InputStateData.BUTTON_LEFT)) {
-
-            println("HOLD!")
 
             if (isSelected) return
 

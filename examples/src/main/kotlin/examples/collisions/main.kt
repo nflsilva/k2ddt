@@ -1,6 +1,7 @@
 package examples.collisions
 
 import examples.collisions.domain.Ball
+import examples.collisions.domain.Wall
 import k2ddt.core.ExecutionContext
 import k2ddt.core.ExecutionDelegate
 import k2ddt.core.dto.UpdateContext
@@ -10,16 +11,22 @@ import k2ddt.tools.Log
 private class Delegate : ExecutionDelegate() {
 
     private val balls = mutableListOf<Ball>()
+    private val walls = mutableListOf<Wall>()
 
-    private var ballSize = 25f
     private var lastPrint = 0.0
 
     override fun onStart() {
 
         executionContext.setBackgroundColor(Color(0.0f))
 
-        addBall(300f, 300f)
-        addBall(300f, 500f)
+        balls.add(Ball(300f, 300f, 25f, Color(1f)))
+        balls.add(Ball(300f, 500f, 100f, Color(1f)))
+
+        walls.add(Wall(0f, 0f, 20f, 720f))
+        walls.add(Wall(1260f, 0f, 20f, 720f))
+        walls.add(Wall(0f, 700f, 1280f, 20f))
+        walls.add(Wall(0f, 0f, 1260f, 20f))
+
     }
 
     override fun onUpdate(updateContext: UpdateContext) {
@@ -33,7 +40,12 @@ private class Delegate : ExecutionDelegate() {
                 val ball1 = balls[b1i]
                 ball0.collideWith(ball1)
             }
+
+            for (wall in walls) {
+                ball0.collideWith(wall)
+            }
         }
+
 
         printProfiling()
 
@@ -41,21 +53,18 @@ private class Delegate : ExecutionDelegate() {
 
     override fun onFrame() {
         balls.forEach { it.draw(executionContext) }
+        walls.forEach { it.draw(executionContext) }
 
         printProfiling()
     }
 
-    private fun addBall(createX: Float, createY: Float) {
-        val b = Ball(createX, createY, ballSize, Color(1f))
-        balls.add(b)
-    }
 
     private fun printProfiling() {
         val data = executionContext.getProfileData()
 
         val r = data.timeStamp - lastPrint
 
-        if (r < 5) {
+        if (r < 0) {
             return
         }
 
