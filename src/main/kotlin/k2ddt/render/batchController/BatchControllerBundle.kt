@@ -29,11 +29,11 @@ class BatchControllerBundle(shaderBundle: ShaderBundle) {
                     Vector2f(transform.position)
                         .add(
                             Vector2f(currentRowX, currentRowY)
-                                .mul(data.size)
                                 .mul(sprite.size)
+                                .mul(transform.scale)
                         ),
                     transform.rotation,
-                    Vector2f(data.size).mul(sprite.size),
+                    Vector2f(sprite.size).mul(transform.scale),
                     transform.layer
                 )
                 val suitableBatch = spriteBatches.getSuitableBatch(transform.layer)
@@ -56,7 +56,7 @@ class BatchControllerBundle(shaderBundle: ShaderBundle) {
 
     fun addToSuitableBatch(text: Text, transform: Transform) {
         val spriteSize = Vector2f(text.size)
-        val fullTextSprite = MultiSprite(1, text.data.length, spriteSize)
+        val fullTextSprite = MultiSprite(1, text.data.length)
 
         for (c in 0 until text.data.length) {
             text.font?.getCharacter(text.data[c])?.let { charSprite ->
@@ -64,7 +64,6 @@ class BatchControllerBundle(shaderBundle: ShaderBundle) {
                     charSprite.color = text.color!!
                     charSprite.colorPercentage = 1f
                 }
-
                 fullTextSprite.addSprite(0, c, spriteSize, charSprite)
             }
         }

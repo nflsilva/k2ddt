@@ -126,7 +126,7 @@ private class Delegate : ExecutionDelegate() {
             executionContext.render(sprite, t0)
         }
 
-        val text = Text("Hello World!", 10f, Color(1f, 0f, 0f, 1f))
+        val text = Text("Hello World!", 32f, Color(1f, 0f, 0f, 1f))
         executionContext.render(
             text, Transform(250f, 300f, 0)
         )
