@@ -5,7 +5,8 @@ import org.joml.Vector2f
 
 class MultiSprite(
     val rows: Int,
-    val columns: Int
+    val columns: Int,
+    val size: Vector2f,
 ) {
 
     data class SpriteInfo(val sprite: Sprite, val size: Vector2f)

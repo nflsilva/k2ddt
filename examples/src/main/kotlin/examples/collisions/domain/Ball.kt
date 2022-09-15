@@ -74,10 +74,10 @@ class Ball(
     private fun drawVelocity(context: ExecutionContext) {
         val text = "${dec.format(velocity.x)} : ${dec.format(velocity.y)}"
         context.render(
-            Text(text, 5f),
+            Text(text, 5f, Color(1f)),
             Transform(
-                transform.position.x + 100f,
-                transform.position.y + 50f,
+                transform.position.x + 200f,
+                transform.position.y,
                 0
             )
         )

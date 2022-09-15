@@ -10,8 +10,10 @@ import k2ddt.render.model.BitmapFont
  * @param data the text to be rendered.
  * @param size the width of a single char.
  * @param font the font to render the text.
+ * @param color the color to render the text.
  */
 data class Text(val data: String,
                 val size: Float,
+                var color: Color? = null,
                 var font: BitmapFont? = null
 )

@@ -4,10 +4,8 @@ import k2ddt.core.ExecutionContext
 import k2ddt.core.ExecutionDelegate
 import k2ddt.core.dto.UpdateContext
 import k2ddt.render.dto.*
-import k2ddt.render.font.DefaultFont
-import k2ddt.render.model.BitmapFont
-import org.joml.Random
 import k2ddt.ui.dto.InputStateData
+import org.joml.Random
 
 private class Delegate : ExecutionDelegate() {
 
@@ -26,7 +24,7 @@ private class Delegate : ExecutionDelegate() {
     lateinit var sprite: Sprite
     var xx = 0f
 
-    private fun setupStress(){
+    private fun setupStress() {
         val nShapes = 16e6.toInt()
         val size = 1f
         for (i in 0 until nShapes) {
@@ -41,7 +39,8 @@ private class Delegate : ExecutionDelegate() {
             )
         }
     }
-    private fun setupLimits(){
+
+    private fun setupLimits() {
         val nShapes = 16
         val size = 90f
         for (i in 0 until nShapes) {
@@ -56,7 +55,8 @@ private class Delegate : ExecutionDelegate() {
             )
         }
     }
-    private fun setupOver(){
+
+    private fun setupOver() {
         shapes.add(
             RandomShape(
                 45f,
@@ -79,29 +79,27 @@ private class Delegate : ExecutionDelegate() {
     override fun onUpdate(updateContext: UpdateContext) {
         shapes.forEach { it.tick(updateContext) }
 
-        if(updateContext.input.scrollY != 0){
+        if (updateContext.input.scrollY != 0) {
             executionContext.zoomCamera(updateContext.input.scrollY.toFloat() * 10f)
         }
-        if(updateContext.input.isKeyPressed(InputStateData.KEY_A)){
+        if (updateContext.input.isKeyPressed(InputStateData.KEY_A)) {
             executionContext.moveCamera(-10f, 0f)
-        }
-        else if(updateContext.input.isKeyPressed(InputStateData.KEY_D)){
+        } else if (updateContext.input.isKeyPressed(InputStateData.KEY_D)) {
             executionContext.moveCamera(10f, 0f)
         }
-        if(updateContext.input.isKeyPressed(InputStateData.KEY_W)){
+        if (updateContext.input.isKeyPressed(InputStateData.KEY_W)) {
             executionContext.moveCamera(0f, 10f)
-        }
-        else if(updateContext.input.isKeyPressed(InputStateData.KEY_S)){
+        } else if (updateContext.input.isKeyPressed(InputStateData.KEY_S)) {
             executionContext.moveCamera(0f, -10f)
         }
     }
 
     override fun onFrame() {
 
-        for(i in shapes.indices) {
-            if(i > 0 && i < shapes.size){
+        for (i in shapes.indices) {
+            if (i > 0 && i < shapes.size) {
 
-                val s0 = shapes[i-1]
+                val s0 = shapes[i - 1]
                 val s1 = shapes[i]
                 val line = Line(
                     s0.transform.position,
@@ -115,7 +113,7 @@ private class Delegate : ExecutionDelegate() {
 
         val ds = 5
         val size = 128f * 2
-        for(i in 0 until ds) {
+        for (i in 0 until ds) {
             val t0 = Transform(
                 i * size,
                 i * size,
@@ -123,19 +121,15 @@ private class Delegate : ExecutionDelegate() {
                 size,
                 size,
                 1 + i,
-                true)
+                true
+            )
             executionContext.render(sprite, t0)
         }
 
-        val text = Text("Hello World!", 5f)
-        val tt = Transform(
-            250f,
-            300f,
-            0f,
-            55f,
-            5f,
-            0)
-        executionContext.render(text, tt)
+        val text = Text("Hello World!", 10f, Color(1f, 0f, 0f, 1f))
+        executionContext.render(
+            text, Transform(250f, 300f, 0)
+        )
 
     }
 }

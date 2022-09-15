@@ -20,9 +20,6 @@ class BatchControllerBundle(shaderBundle: ShaderBundle) {
 
     fun addToSuitableBatch(data: MultiSprite, transform: Transform) {
 
-        val spriteSize = Vector2f(transform.scale)
-            .div(Vector2f(data.columns.toFloat(), data.rows.toFloat()))
-
         var currentRowY = data.rows / -2f
         for (r in 0 until data.rows) {
             var currentRowX = data.columns / -2f
@@ -32,11 +29,11 @@ class BatchControllerBundle(shaderBundle: ShaderBundle) {
                     Vector2f(transform.position)
                         .add(
                             Vector2f(currentRowX, currentRowY)
-                                .mul(spriteSize)
+                                .mul(data.size)
                                 .mul(sprite.size)
                         ),
                     transform.rotation,
-                    Vector2f(spriteSize).mul(sprite.size),
+                    Vector2f(data.size).mul(sprite.size),
                     transform.layer
                 )
                 val suitableBatch = spriteBatches.getSuitableBatch(transform.layer)
@@ -58,11 +55,16 @@ class BatchControllerBundle(shaderBundle: ShaderBundle) {
     }
 
     fun addToSuitableBatch(text: Text, transform: Transform) {
-        val fullTextSprite = MultiSprite(1, text.data.length)
         val spriteSize = Vector2f(text.size)
+        val fullTextSprite = MultiSprite(1, text.data.length, spriteSize)
 
         for (c in 0 until text.data.length) {
             text.font?.getCharacter(text.data[c])?.let { charSprite ->
+                if (text.color != null) {
+                    charSprite.color = text.color!!
+                    charSprite.colorPercentage = 1f
+                }
+
                 fullTextSprite.addSprite(0, c, spriteSize, charSprite)
             }
         }
@@ -75,7 +77,7 @@ class BatchControllerBundle(shaderBundle: ShaderBundle) {
     }
 
     fun draw(uniforms: ShaderUniforms) {
-        for(layer in 0 until RenderEntityBatchController.DEFAULT_N_LAYERS){
+        for (layer in 0 until RenderEntityBatchController.DEFAULT_N_LAYERS) {
             val layerToDraw = RenderEntityBatchController.DEFAULT_N_LAYERS - layer - 1
             spriteBatches.draw(layerToDraw, uniforms)
             shapeBatches.draw(layerToDraw, uniforms)
