@@ -24,7 +24,6 @@ private class Delegate : ExecutionDelegate() {
     )
 
     lateinit var sprite: Sprite
-    lateinit var font: BitmapFont
     var xx = 0f
 
     private fun setupStress(){
@@ -70,14 +69,11 @@ private class Delegate : ExecutionDelegate() {
     }
 
     override fun onStart() {
-
         //setupStress()
         setupOver()
         setupLimits()
 
         sprite = Sprite("/sprite/cube.png")
-        font = DefaultFont()
-
     }
 
     override fun onUpdate(updateContext: UpdateContext) {
@@ -131,9 +127,9 @@ private class Delegate : ExecutionDelegate() {
             executionContext.render(sprite, t0)
         }
 
-        val text = Text("Hello World!", font)
+        val text = Text("Hello World!", 5f)
         val tt = Transform(
-            300f,
+            250f,
             300f,
             0f,
             55f,

@@ -5,7 +5,6 @@ import k2ddt.render.RenderEngine
 import k2ddt.sound.SoundEngine
 import k2ddt.tools.Profiler
 import k2ddt.ui.UIEngine
-import k2ddt.ui.dto.InputStateData
 
 class CoreEngine(
     configuration: EngineConfiguration? = null,
@@ -32,56 +31,52 @@ class CoreEngine(
 
     private fun run() {
 
-        var frameStart: Double
-        var frameEnd: Double
-        var frameDelta = 0.0
+        val step = 0.01
+        val timeSlice = 1f / 60
 
+        var firstTime = 0.0
+        var lastTime = uiEngine.getTime()
+        var passedTime = 0.0
+        var unprocessedTime = 0.0
+
+        var render = false
         var frames = 0
-        var ticks = 0
-
-        val tickTime: Double = 1.0 / ticksPerSecondCap
-        val frameTime: Double = 1.0 / framePerSecondCap
-        val printTime: Double = 1.0 / printsPerSecondCap
-
-        var timeSinceTick = 0.0
-        var timeSinceFrame = 0.0
-        var timeSincePrint = 0.0
+        var passedSinceFPS = 0.0
 
         while (isRunning) {
 
-            frameStart = uiEngine.getTime()
+            render = false
+            firstTime = uiEngine.getTime()
 
-            if (timeSinceTick >= tickTime) {
-                onUpdate(tickTime)
-                ticks++
-                timeSinceTick = 0.0
+            passedTime = firstTime - lastTime
+            lastTime = firstTime
+
+            unprocessedTime += passedTime
+            passedSinceFPS += passedTime
+
+            while (unprocessedTime >= timeSlice) {
+                onUpdate(step)
+                unprocessedTime -= timeSlice
+                render = true
             }
 
-            if (timeSinceFrame >= frameTime) {
+            if (render) {
                 onFrame()
-                frames++
-                timeSinceFrame = 0.0
+                frames += 1
             }
 
-            if (timeSincePrint >= printTime) {
-
-                profiler.framesPerSecond = frames
-                ticks = 0
+            if(passedSinceFPS >= 1.0){
+                passedSinceFPS = 0.0
+                profilerData = profiler.getData()
+                profilerData.framesPerSecond = frames
                 frames = 0
-                timeSincePrint = 0.0
             }
 
             if (!uiEngine.isRunning()) {
                 isRunning = false
             }
 
-            frameEnd = uiEngine.getTime()
-            frameDelta = frameEnd - frameStart
-            timeSinceTick += frameDelta
-            timeSinceFrame += frameDelta
-            timeSincePrint += frameDelta
-
-            profilerData = profiler.getData()
+            Thread.sleep(10)
         }
 
         onCleanUp()

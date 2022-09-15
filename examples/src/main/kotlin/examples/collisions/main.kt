@@ -7,6 +7,7 @@ import k2ddt.core.ExecutionDelegate
 import k2ddt.core.dto.UpdateContext
 import k2ddt.render.dto.Color
 import k2ddt.tools.Log
+import java.text.DecimalFormat
 
 private class Delegate : ExecutionDelegate() {
 
@@ -20,17 +21,13 @@ private class Delegate : ExecutionDelegate() {
         executionContext.setBackgroundColor(Color(0.0f))
 
         balls.add(Ball(300f, 300f, 25f, Color(1f)))
-        //balls.add(Ball(300f, 500f, 100f, Color(1f)))
+        balls.add(Ball(300f, 500f, 100f, Color(1f)))
 
-        /*
         walls.add(Wall(0f, 0f, 20f, 720f))
         walls.add(Wall(1260f, 0f, 20f, 720f))
         walls.add(Wall(0f, 700f, 1280f, 20f))
-
         walls.add(Wall(0f, 0f, 1260f, 20f))
-        walls.add(Wall(40f, 40f, 10f, 10f))
-        walls.add(Wall(50f, 50f, 10f, 10f))
-*/
+
     }
 
     override fun onUpdate(updateContext: UpdateContext) {
@@ -74,12 +71,14 @@ private class Delegate : ExecutionDelegate() {
 
         lastPrint = data.timeStamp
 
+        val dec = DecimalFormat("##.######")
         var printedActivities = ""
         data.activities.forEach { printedActivities += "${it.first}: ${it.second}\n" }
 
+
         Log.d(
             "---\n" +
-                    "${data.timeStamp} - FPS: ${data.framesPerSecond}\n" +
+                    "${dec.format(data.timeStamp)}s - FPS: ${data.framesPerSecond}\n" +
                     printedActivities
         )
     }

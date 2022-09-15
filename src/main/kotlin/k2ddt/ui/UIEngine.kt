@@ -5,6 +5,7 @@ import k2ddt.ui.dto.InputStateData
 import k2ddt.ui.input.Keyboard
 import k2ddt.ui.input.Mouse
 import org.lwjgl.glfw.GLFW.glfwGetTime
+import java.lang.System.currentTimeMillis
 
 class UIEngine(configuration: EngineConfiguration) {
 

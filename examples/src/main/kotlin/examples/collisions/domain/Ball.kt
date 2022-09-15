@@ -20,8 +20,8 @@ class Ball(
         centerX,
         centerY,
         0f,
-        radius,
-        radius,
+        radius * 2f,
+        radius * 2f,
         1,
         true
     )
@@ -50,7 +50,6 @@ class Ball(
     private var line = Line(centerX, centerY, 0f, 0f, Color(1f, 0f, 0f, 1f))
     private var lineTransform = Transform(0)
     private var collisions: MutableList<Ball> = mutableListOf()
-    private var defaultFont = DefaultFont()
     private val dec = DecimalFormat("##.##")
 
     fun tick(updateContext: UpdateContext) {
@@ -75,13 +74,10 @@ class Ball(
     private fun drawVelocity(context: ExecutionContext) {
         val text = "${dec.format(velocity.x)} : ${dec.format(velocity.y)}"
         context.render(
-            Text(text, defaultFont),
+            Text(text, 5f),
             Transform(
                 transform.position.x + 100f,
                 transform.position.y + 50f,
-                0f,
-                text.length * 5f,
-                5f,
                 0
             )
         )
@@ -116,15 +112,33 @@ class Ball(
         val top = y + radius
         val bottom = y - radius
 
-        if ((left < wall.right && right > wall.right) ||
-            (right > wall.left && left < wall.left)
-        ) {
+
+        val hitLeft = (left < wall.right && right > wall.right)
+        val hitRight = (right > wall.left && left < wall.left)
+
+        if (hitLeft || hitRight) {
+
+            x = if (hitLeft) {
+                wall.right + radius
+            } else {
+                wall.left - radius
+            }
+
             velocity = Vector2f(-velocity.x, velocity.y)
             computeVelocity = false
-        } else if (
-            (top > wall.bottom && bottom < wall.bottom) ||
-            (bottom < wall.top && top > wall.top)
-        ) {
+            return
+        }
+
+        val hitTop = (top > wall.bottom && bottom < wall.bottom)
+        val hitBottom = (bottom < wall.top && top > wall.top)
+        if (hitTop || hitBottom) {
+
+            y = if (hitTop) {
+                wall.bottom - radius
+            } else {
+                wall.top + radius
+            }
+
             velocity = Vector2f(velocity.x, -velocity.y)
             computeVelocity = false
         }

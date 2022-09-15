@@ -59,12 +59,12 @@ class BatchControllerBundle(shaderBundle: ShaderBundle) {
 
     fun addToSuitableBatch(text: Text, transform: Transform) {
         val fullTextSprite = MultiSprite(1, text.data.length)
-        val spriteSize = Vector2f(transform.scale)
-            .div(Vector2f(fullTextSprite.columns.toFloat(), fullTextSprite.rows.toFloat()))
+        val spriteSize = Vector2f(text.size)
 
         for (c in 0 until text.data.length) {
-            val charSprite = text.font.getCharacter(text.data[c])
-            fullTextSprite.addSprite(0, c, spriteSize, charSprite)
+            text.font?.getCharacter(text.data[c])?.let { charSprite ->
+                fullTextSprite.addSprite(0, c, spriteSize, charSprite)
+            }
         }
         addToSuitableBatch(fullTextSprite, transform)
     }
