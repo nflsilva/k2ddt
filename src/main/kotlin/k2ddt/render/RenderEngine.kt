@@ -48,14 +48,6 @@ class RenderEngine(private val screenWidth: Int, private val screenHeight: Int) 
         clearBatches()
     }
 
-    fun onUpdate() {
-
-    }
-
-    fun onCleanUp() {
-
-    }
-
     fun setBackgroundColor(color: Color) {
         backgroundColor = color
     }

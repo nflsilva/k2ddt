@@ -101,10 +101,6 @@ class CoreEngine(
         val updateContext = UpdateContext(elapsedTime.toFloat(), input)
         profiler.end("onUIUpdate")
 
-        profiler.start("onRenderUpdate")
-        renderEngine.onUpdate()
-        profiler.end("onRenderUpdate")
-
 
         profiler.start("[user] onUpdate")
         delegate?.onUpdate(updateContext)

@@ -4,8 +4,10 @@ import examples.vulcano.domain.Ball
 import k2ddt.core.ExecutionContext
 import k2ddt.core.ExecutionDelegate
 import k2ddt.core.dto.UpdateContext
+import examples.physics.PhysicsEngine
 import k2ddt.render.dto.Color
 import k2ddt.render.dto.Line
+import k2ddt.render.dto.Text
 import k2ddt.render.dto.Transform
 import k2ddt.tools.Log
 import org.joml.Random
@@ -27,16 +29,12 @@ private class Delegate : ExecutionDelegate() {
     private val heatWindow = 100
     private val heatEnergy = 10f
 
+
     override fun onStart() {
 
         executionContext.setBackgroundColor(Color(0.0f))
 
         addBall(300f, 320f)
-        addBall(300f, 340f)
-        addBall(300f, 360f)
-        addBall(300f, 380f)
-        addBall(300f, 400f)
-        //balls[1].energy = 1000f
     }
 
     override fun onUpdate(updateContext: UpdateContext) {
@@ -82,6 +80,11 @@ private class Delegate : ExecutionDelegate() {
         )
         executionContext.render(
             Line(leftLimit, topLimit, rightLimit, topLimit, Color((1f))), Transform(1)
+        )
+
+        executionContext.render(
+            Text("${balls.size} balls", 32f, Color(1f)),
+            Transform(rightLimit + 200f, topLimit - bottomLimit / 2, 0)
         )
     }
 

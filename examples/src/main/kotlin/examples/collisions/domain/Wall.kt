@@ -1,12 +1,9 @@
 package examples.collisions.domain
 
 import k2ddt.core.ExecutionContext
-import k2ddt.core.dto.UpdateContext
-import k2ddt.render.dto.*
-import k2ddt.render.font.DefaultFont
-import k2ddt.ui.dto.InputStateData
-import org.joml.Vector2f
-import java.text.DecimalFormat
+import k2ddt.render.dto.Color
+import k2ddt.render.dto.Shape
+import k2ddt.render.dto.Transform
 
 class Wall(
     centerX: Float,
