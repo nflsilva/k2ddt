@@ -6,9 +6,6 @@ import k2ddt.physics.collision.CollisionMap
 import k2ddt.physics.collision.CollisionSolver
 import k2ddt.physics.dto.PhysicalBody
 import k2ddt.physics.moviment.MovementSolver
-import k2ddt.render.dto.Color
-import k2ddt.render.dto.Line
-import k2ddt.render.dto.Transform
 import org.joml.Vector2f
 
 class PhysicsEngine() {
@@ -61,14 +58,14 @@ class PhysicsEngine() {
     }
 
     private fun updateCollisionMap() {
-        for(c in colliders.values) {
+        for (c in colliders.values) {
             collisionMap.updateColliderChunks(c)
         }
     }
 
     private fun computeCollisions() {
         val activeChunks = collisionMap.getChunksWithColliders()
-        for(chunk in activeChunks) {
+        for (chunk in activeChunks) {
 
             val collidersInChunk = collisionMap.getCollidersAt(chunk.y, chunk.x)
 
@@ -77,24 +74,25 @@ class PhysicsEngine() {
                 val uuid0 = collidersInChunk[b0i]
                 for (b1i in b0i + 1 until collidersInChunk.size) {
                     val uuid1 = collidersInChunk[b1i]
-                    val collider0 = colliders[uuid0] as? CircleCollider ?: continue
-                    val collider1 = colliders[uuid1] as? CircleCollider ?: continue
+                    val collider0 = colliders[uuid0] ?: continue
+                    val collider1 = colliders[uuid1] ?: continue
 
-                    if(collider0.collisionVectors.keys.contains(uuid1)) continue
+                    if (collider0.collisionVectors.keys.contains(uuid1) ||
+                        !collider0.aabb.collidesWith(collider1.aabb)
+                    ) continue
 
-                    CollisionSolver.computeCollision(collider0, collider1)?.let {
-                        collider0.collisionVectors[uuid1] = it
-                    }
+                    collider0.collideWith(collider1)
                 }
             }
         }
     }
 
     private fun updateCollidingBodies() {
-        for(collider in colliders.values) {
-            for(v in collider.collisionVectors) {
+        for (collider in colliders.values) {
+            for (v in collider.collisionVectors) {
                 val c0 = colliders[v.value.id0] as? CircleCollider ?: continue
                 val c1 = colliders[v.value.id1] as? CircleCollider ?: continue
+                CollisionSolver.computeStaticResolution(c0, c1, v.value)
                 CollisionSolver.computeElasticCollision(c0, c1, v.value)
             }
             collider.collisionVectors.clear()

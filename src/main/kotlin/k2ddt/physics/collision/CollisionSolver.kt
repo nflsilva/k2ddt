@@ -18,13 +18,24 @@ class CollisionSolver {
             return null
         }
 
-        fun computeDynamicResolution(c0: CircleCollider, c1: CircleCollider, v: CollisionVector) {
+        fun computeCollision(c0: CircleCollider, b0: BoxCollider) : CollisionVector? {
+
+            return null
+        }
+
+        fun computeCollision(b0: BoxCollider, b1: BoxCollider) : CollisionVector? {
+
+            return null
+        }
+
+        fun computeStaticResolution(c0: CircleCollider, c1: CircleCollider, v: CollisionVector) {
+            val dist = ((c0.radius + c1.radius) - v.distance) / 2f
             c0.body.apply {
-                position.add(Vector2f(v.vector).mul(v.distance / 2f))
+                position.add(Vector2f(v.vector).mul(dist))
                 computeVelocity = false
             }
             c1.body.apply {
-                position.add(Vector2f(v.vector).mul(v.distance / 2f))
+                position.sub(Vector2f(v.vector).mul(dist))
                 computeVelocity = false
             }
         }

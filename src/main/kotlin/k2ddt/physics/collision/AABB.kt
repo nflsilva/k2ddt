@@ -22,4 +22,11 @@ class AABB(var center: Vector2f, var radius: Float) {
     val bottom: Float
         get() = y - radius
 
+    fun collidesWith(other: AABB): Boolean {
+        return (top > other.bottom && bottom < other.bottom) ||
+                (bottom < other.top && top > other.top) ||
+                (left < other.right && right > other.right) ||
+                (right > other.left && left < other.left)
+    }
+
 }
