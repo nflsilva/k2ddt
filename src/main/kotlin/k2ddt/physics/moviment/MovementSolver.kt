@@ -1,8 +1,7 @@
-package examples.physics.moviment
+package k2ddt.physics.moviment
 
-import examples.physics.dto.PhysicalBody
+import k2ddt.physics.dto.PhysicalBody
 import org.joml.Vector2f
-import kotlin.Boolean
 
 class MovementSolver {
     companion object {

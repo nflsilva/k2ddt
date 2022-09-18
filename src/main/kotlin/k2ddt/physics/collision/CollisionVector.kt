@@ -1,4 +1,4 @@
-package examples.physics.collision
+package k2ddt.physics.collision
 
 import org.joml.Vector2f
 

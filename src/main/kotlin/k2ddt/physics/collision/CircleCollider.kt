@@ -1,6 +1,6 @@
-package examples.physics.collision
+package k2ddt.physics.collision
 
-import examples.physics.dto.PhysicalBody
+import k2ddt.physics.dto.PhysicalBody
 
 class CircleCollider(body: PhysicalBody, val radius: Float) : Collider(body) {
 

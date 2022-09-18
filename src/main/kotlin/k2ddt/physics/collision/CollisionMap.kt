@@ -1,4 +1,4 @@
-package examples.physics.collision
+package k2ddt.physics.collision
 
 import org.joml.Vector2i
 import kotlin.math.ceil
@@ -9,7 +9,7 @@ class CollisionMap() {
     val verticalChunkSize = 64
     val horizontalChunkSize = 64
 
-    private val activeChunks = mutableListOf<Vector2i>()
+    private val activeChunks = mutableMapOf<String, Vector2i>()
     private val chunksPerBody = mutableMapOf<String, MutableSet<Vector2i>>()
     private val map: MutableMap<Int, MutableMap<Int, MutableSet<String>>> = mutableMapOf()
 
@@ -19,7 +19,7 @@ class CollisionMap() {
     }
 
     fun getChunksWithColliders(): List<Vector2i> {
-        return activeChunks
+        return activeChunks.values.toList()
     }
 
     fun getCollidersAt(row: Int, column: Int): List<String> {
@@ -55,7 +55,10 @@ class CollisionMap() {
                 }
 
                 chunk.add(collider.body.id)
-                activeChunks.add(Vector2i(c, r))
+                if(chunk.size > 1) {
+                    activeChunks["$c:$r"] = Vector2i(c, r)
+                }
+
                 chunkPerBody.add(Vector2i(c, r))
             }
         }
@@ -67,7 +70,7 @@ class CollisionMap() {
             val bodiesInChunk = map[it.y]?.get(it.x)
             bodiesInChunk?.remove(collider.body.id)
             if (bodiesInChunk?.isEmpty() == true) {
-                activeChunks.removeIf { ac -> ac.x == it.x && ac.y == it.y }
+                activeChunks.remove("${it.y}:${it.x}")
             }
         }
     }

@@ -1,4 +1,4 @@
-package examples.physics.collision
+package k2ddt.physics.collision
 
 import org.joml.Vector2f
 
@@ -8,9 +8,9 @@ class CollisionSolver {
         fun computeCollision(c0: CircleCollider, c1: CircleCollider) : CollisionVector? {
 
             val distanceVector = Vector2f(c0.body.position).sub(c1.body.position)
-            val distance2 = distanceVector.lengthSquared()
+            val distance2 = distanceVector.length()
             val r2 = c0.radius + c1.radius
-            val delta = distance2 - (r2 * r2)
+            val delta = distance2 - r2
 
             if (delta < 0) {
                 return CollisionVector(c0.body.id, c1.body.id, distance2, distanceVector.normalize())
@@ -18,7 +18,21 @@ class CollisionSolver {
             return null
         }
 
+        fun computeDynamicResolution(c0: CircleCollider, c1: CircleCollider, v: CollisionVector) {
+            c0.body.apply {
+                position.add(Vector2f(v.vector).mul(v.distance / 2f))
+                computeVelocity = false
+            }
+            c1.body.apply {
+                position.add(Vector2f(v.vector).mul(v.distance / 2f))
+                computeVelocity = false
+            }
+        }
+
         fun computeElasticCollision(c0: CircleCollider, c1: CircleCollider, v: CollisionVector) {
+
+            //computeDynamicResolution(c0, c1, v)
+            //return
 
             val v0 = computeElasticVelocity(
                 c0.body.position,
@@ -58,14 +72,14 @@ class CollisionSolver {
             m2: Float,
             v1: Vector2f,
             v2: Vector2f,
-            d2: Float
+            d: Float
         ): Vector2f {
 
             val massAux = 2 * m2 / (m1 + m2)
 
             val crossAux0 = Vector2f(v1).sub(v2)
             val crossAux1 = Vector2f(x1).sub(x2)
-            val crossAux = crossAux0.dot(crossAux1) / d2
+            val crossAux = crossAux0.dot(crossAux1) / (d * d)
 
             val distanceAux = Vector2f(crossAux1)
 

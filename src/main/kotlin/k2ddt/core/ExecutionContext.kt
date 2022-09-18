@@ -1,10 +1,13 @@
 package k2ddt.core
 
+import k2ddt.physics.PhysicsEngine
+import k2ddt.physics.dto.PhysicalBody
 import k2ddt.render.RenderEngine
 import k2ddt.render.dto.*
 import k2ddt.sound.SoundEngine
 import k2ddt.sound.dto.Sound
 import k2ddt.ui.UIEngine
+import org.joml.Vector2f
 
 class ExecutionContext(
     configuration: EngineConfiguration = EngineConfiguration.default(),
@@ -15,6 +18,7 @@ class ExecutionContext(
     private val engine: CoreEngine
     private val graphics: RenderEngine
     private val audio: SoundEngine
+    private val physics: PhysicsEngine
     private val ui: UIEngine
 
     init {
@@ -24,7 +28,8 @@ class ExecutionContext(
         )
         ui = UIEngine(configuration)
         audio = SoundEngine()
-        engine = CoreEngine(configuration, graphics, ui, audio, delegate)
+        physics = PhysicsEngine()
+        engine = CoreEngine(configuration, graphics, ui, audio, physics, delegate)
         delegate?.executionContext = this
     }
 
@@ -71,4 +76,21 @@ class ExecutionContext(
     fun playSound(sound: Sound) {
         audio.playSound(sound)
     }
+
+    fun createPhysicalBody(body: PhysicalBody) {
+        physics.createPhysicalBody(body)
+    }
+
+    fun createCircleCollider(uuid: String, radius: Float) {
+        physics.createCollider(uuid, radius)
+    }
+
+    fun getPhysicalBody(uuid: String): PhysicalBody? {
+        return physics.getPhysicalBody(uuid)
+    }
+
+    fun applyForce(uuid: String, force: Vector2f) {
+        physics.applyForce(uuid, force)
+    }
+
 }

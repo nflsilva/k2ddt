@@ -4,7 +4,6 @@ import examples.vulcano.domain.Ball
 import k2ddt.core.ExecutionContext
 import k2ddt.core.ExecutionDelegate
 import k2ddt.core.dto.UpdateContext
-import examples.physics.PhysicsEngine
 import k2ddt.render.dto.Color
 import k2ddt.render.dto.Line
 import k2ddt.render.dto.Text

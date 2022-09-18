@@ -2,17 +2,12 @@ package examples.collisions
 
 import examples.collisions.domain.Ball
 import examples.collisions.domain.Wall
-import examples.physics.PhysicsEngine
 import k2ddt.core.ExecutionContext
 import k2ddt.core.ExecutionDelegate
 import k2ddt.core.dto.UpdateContext
 import k2ddt.render.dto.Color
-import k2ddt.render.dto.Line
-import k2ddt.render.dto.Transform
 import k2ddt.tools.Log
 import java.text.DecimalFormat
-
-val physics = PhysicsEngine()
 
 private class Delegate : ExecutionDelegate() {
 
@@ -25,9 +20,9 @@ private class Delegate : ExecutionDelegate() {
 
         executionContext.setBackgroundColor(Color(0.0f))
 
-        balls.add(Ball(600f, 500f, 200f, Color(1f)))
-        balls.add(Ball(300f, 500f, 200f, Color(1f)))
-        balls.add(Ball(800f, 500f, 100f, Color(1f)))
+        balls.add(Ball(600f, 500f, 200f, Color(1f), executionContext))
+        balls.add(Ball(300f, 500f, 200f, Color(1f), executionContext))
+        balls.add(Ball(800f, 500f, 100f, Color(1f), executionContext))
 
         //walls.add(Wall(1260f, 0f, 20f, 720f))
         //walls.add(Wall(0f, 700f, 1280f, 20f))
@@ -59,37 +54,11 @@ private class Delegate : ExecutionDelegate() {
 
         printProfiling()
 
-        physics.onUpdate()
-
     }
 
     override fun onFrame() {
 
-        for (c in 0 until 1280 step physics.collisionMap.horizontalChunkSize) {
-            executionContext.render(
-                Line(
-                    c.toFloat(),
-                    0f,
-                    c.toFloat(),
-                    720f,
-                    Color(1f, 1f, 1f, 0.5f)
-                ),
-                Transform(2)
-            )
-        }
 
-        for (r in 0 until 720 step physics.collisionMap.verticalChunkSize) {
-            executionContext.render(
-                Line(
-                    0f,
-                    r.toFloat(),
-                    1280f,
-                    r.toFloat(),
-                    Color(1f, 1f, 1f, 0.5f)
-                ),
-                Transform(2)
-            )
-        }
 
         balls.forEach { it.draw(executionContext) }
         walls.forEach { it.draw(executionContext) }
@@ -117,7 +86,6 @@ private class Delegate : ExecutionDelegate() {
                     "${dec.format(data.timeStamp)}s - FPS: ${data.framesPerSecond}\n" +
                     printedActivities
         )
-        physics.collisionMap.debug()
     }
 }
 

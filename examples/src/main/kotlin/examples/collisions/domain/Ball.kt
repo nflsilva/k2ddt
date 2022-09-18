@@ -1,9 +1,8 @@
 package examples.collisions.domain
 
-import examples.collisions.physics
-import examples.physics.dto.PhysicalBody
 import k2ddt.core.ExecutionContext
 import k2ddt.core.dto.UpdateContext
+import k2ddt.physics.dto.PhysicalBody
 import k2ddt.render.dto.*
 import k2ddt.ui.dto.InputStateData
 import org.joml.Vector2f
@@ -14,7 +13,8 @@ class Ball(
     centerX: Float,
     centerY: Float,
     private val mass: Float,
-    private val color: Color
+    private val color: Color,
+    private val executionContext: ExecutionContext,
 ) {
 
     private val uuid = UUID.randomUUID().toString()
@@ -39,13 +39,12 @@ class Ball(
     private var v = Vector2f(0f)
 
     init {
-        physics.createPhysicalBody(PhysicalBody(uuid, Vector2f(centerX, centerY), mass))
-        physics.createCollider(uuid, radius)
+        executionContext.createPhysicalBody(PhysicalBody(uuid, Vector2f(centerX, centerY), mass, 0.1f))
+        executionContext.createCircleCollider(uuid, radius)
     }
 
     fun tick(updateContext: UpdateContext) {
-
-        physics.getPhysicalBody(uuid)?.let { body ->
+        executionContext.getPhysicalBody(uuid)?.let { body ->
             transform.position = body.position
             v = body.velocity
         }
@@ -87,7 +86,7 @@ class Ball(
     }
 
     fun applyForce(force: Vector2f) {
-        physics.applyForce(uuid, force)
+        executionContext.applyForce(uuid, force)
     }
 
     private fun handleInputs(input: InputStateData) {

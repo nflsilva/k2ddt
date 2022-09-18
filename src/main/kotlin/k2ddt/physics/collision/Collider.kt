@@ -1,7 +1,6 @@
-package examples.physics.collision
+package k2ddt.physics.collision
 
-import examples.physics.dto.PhysicalBody
-import org.joml.Vector2f
+import k2ddt.physics.dto.PhysicalBody
 
 abstract class Collider(val body: PhysicalBody) {
 
