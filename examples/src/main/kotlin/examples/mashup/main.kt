@@ -102,14 +102,14 @@ private class Delegate : ExecutionDelegate() {
                 val s0 = shapes[i - 1]
                 val s1 = shapes[i]
                 val line = Line(
-                    s0.transform.position,
-                    s1.transform.position,
+                    s0.position,
+                    s1.position,
                     Color(1f)
                 )
                 executionContext.render(line, Transform(5))
             }
         }
-        shapes.forEach { it.draw(executionContext) }
+        shapes.forEach { it.draw() }
 
         val ds = 5
         val size = 128f * 2
@@ -137,7 +137,8 @@ private class Delegate : ExecutionDelegate() {
 fun main(args: Array<String>) {
 
     val delegate = Delegate()
-    val ec = ExecutionContext(delegate = delegate)
+    val ec = ExecutionContext.getInstance()
+    ec.setup(delegate = delegate)
     ec.start()
 
     println("Done!")

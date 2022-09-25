@@ -1,6 +1,8 @@
 package examples.collisions.domain
 
+import examples.collisions.pe
 import k2ddt.core.ExecutionContext
+import k2ddt.core.GameEntity
 import k2ddt.core.dto.UpdateContext
 import k2ddt.physics.dto.PhysicalBody
 import k2ddt.render.dto.*
@@ -14,11 +16,9 @@ class Ball(
     centerY: Float,
     private val mass: Float,
     private val color: Color,
-    private val executionContext: ExecutionContext,
-) {
+) : GameEntity() {
 
-    private val uuid = UUID.randomUUID().toString()
-    private val transform = Transform(
+    override val transform = Transform(
         centerX,
         centerY,
         0f,
@@ -39,37 +39,24 @@ class Ball(
     private var v = Vector2f(0f)
 
     init {
-        executionContext.createPhysicalBody(PhysicalBody(uuid, Vector2f(centerX, centerY), mass, 0.1f))
-        executionContext.createCircleCollider(uuid, radius)
+        val body = PhysicalBody(this, mass)
+        pe.createPhysicalBody(body)
+        pe.createCircleCollider(body)
     }
 
     fun tick(updateContext: UpdateContext) {
-        executionContext.getPhysicalBody(uuid)?.let { body ->
-            transform.position = body.position
-            v = body.velocity
-        }
-
         handleInputs(updateContext.input)
     }
 
-    fun draw(context: ExecutionContext) {
-        context.render(Shape(Shape.Type.CIRCLE, color), transform)
-
-        drawVelocity(context)
-
-        drawForceLine(context)
-
-        /*
-        collisions.forEach {
-            context.render(
-                Line(transform.position, it.transform.position, Color(0f, 1f, 0f, 1f)), Transform(0)
-            )
-        }*/
+    fun draw() {
+        ee.render(Shape(Shape.Type.CIRCLE, color), transform)
+        //drawVelocity()
+        drawForceLine()
     }
 
-    private fun drawVelocity(context: ExecutionContext) {
+    private fun drawVelocity() {
         val text = "${dec.format(v.x)} : ${dec.format(v.y)}"
-        context.render(
+        ee.render(
             Text(text, 16f, Color(0f, 0f, 0f, 1f)),
             Transform(
                 transform.position.x,
@@ -79,14 +66,14 @@ class Ball(
         )
     }
 
-    private fun drawForceLine(context: ExecutionContext) {
+    private fun drawForceLine() {
         if (isSelected) {
-            context.render(line, lineTransform)
+            ee.render(line, lineTransform)
         }
     }
 
     fun applyForce(force: Vector2f) {
-        executionContext.applyForce(uuid, force)
+        pe.applyForce(uuid, force)
     }
 
     private fun handleInputs(input: InputStateData) {
@@ -113,9 +100,10 @@ class Ball(
                 input.mouseY - y
             )
 
-            val mag = distanceToMouse.lengthSquared() * 50f
+            val mag = distanceToMouse.lengthSquared() * 25f
             applyForce(distanceToMouse.normalize().mul(mag))
         }
+
     }
 
 }

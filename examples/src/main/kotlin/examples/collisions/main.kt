@@ -5,9 +5,16 @@ import examples.collisions.domain.Wall
 import k2ddt.core.ExecutionContext
 import k2ddt.core.ExecutionDelegate
 import k2ddt.core.dto.UpdateContext
+import k2ddt.physics.PhysicsEngine
+import k2ddt.render.RenderEngine
 import k2ddt.render.dto.Color
+import k2ddt.render.dto.Line
+import k2ddt.render.dto.Transform
 import k2ddt.tools.Log
+import org.joml.Vector2f
 import java.text.DecimalFormat
+
+val pe = PhysicsEngine()
 
 private class Delegate : ExecutionDelegate() {
 
@@ -18,23 +25,25 @@ private class Delegate : ExecutionDelegate() {
 
     override fun onStart() {
 
-        executionContext.setBackgroundColor(Color(0.0f))
+        //executionContext.setBackgroundColor(Color(0.0f))
 
-        balls.add(Ball(600f, 500f, 200f, Color(1f), executionContext))
-        balls.add(Ball(300f, 500f, 200f, Color(1f), executionContext))
-        balls.add(Ball(800f, 500f, 100f, Color(1f), executionContext))
+        //balls.add(Ball(600f, 500f, 200f, Color(1f), executionContext))
+        balls.add(Ball(300f, 500f, 50f, Color(1f)))
+        balls.add(Ball(600f, 500f, 100f, Color(1f)))
 
-        //walls.add(Wall(1260f, 0f, 20f, 720f))
-        //walls.add(Wall(0f, 700f, 1280f, 20f))
+        walls.add(Wall(100f, 0f, 1080f, 10f))
+        walls.add(Wall(100f, 710f, 1080f, 10f))
+
+        walls.add(Wall(100f, 0f, 10f, 720f))
+        walls.add(Wall(1180f, 0f, 10f, 720f))
+        //walls.add(Wall(500f, 100f, 500f, 50f))
         //walls.add(Wall(0f, 0f, 1260f, 20f))
-
     }
 
     override fun onUpdate(updateContext: UpdateContext) {
 
-        balls.forEach {
-            it.tick(updateContext)
-        }
+        balls.forEach { it.tick(updateContext) }
+        walls.forEach { it.tick(updateContext) }
 
         /*
         for (b0i in 0 until balls.size) {
@@ -52,21 +61,22 @@ private class Delegate : ExecutionDelegate() {
             }
         }*/
 
+        pe.onUpdate()
+
         printProfiling()
 
     }
 
     override fun onFrame() {
 
-
-
-        balls.forEach { it.draw(executionContext) }
-        walls.forEach { it.draw(executionContext) }
+        balls.forEach { it.draw() }
+        walls.forEach { it.draw() }
 
         printProfiling()
     }
 
     private fun printProfiling() {
+        /*
         val data = executionContext.getProfileData()
 
         val r = data.timeStamp - lastPrint
@@ -85,16 +95,16 @@ private class Delegate : ExecutionDelegate() {
             "---\n" +
                     "${dec.format(data.timeStamp)}s - FPS: ${data.framesPerSecond}\n" +
                     printedActivities
-        )
+        )*/
     }
 }
 
 fun main(args: Array<String>) {
 
     val delegate = Delegate()
-    val ec = ExecutionContext(delegate = delegate)
+    val ec = ExecutionContext.getInstance()
+    ec.setup(delegate = delegate)
     ec.start()
 
     println("Done!")
 }
-

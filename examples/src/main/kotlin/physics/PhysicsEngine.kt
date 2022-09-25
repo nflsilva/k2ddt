@@ -1,21 +1,18 @@
 package k2ddt.physics
 
-import k2ddt.physics.collision.CircleCollider
-import k2ddt.physics.collision.Collider
-import k2ddt.physics.collision.CollisionMap
-import k2ddt.physics.collision.CollisionSolver
+import k2ddt.physics.collision.*
 import k2ddt.physics.dto.PhysicalBody
 import k2ddt.physics.moviment.MovementSolver
 import org.joml.Vector2f
 
 class PhysicsEngine() {
 
-    private val step = 0.01f
-    private val nUpdates = 10
+    private val step = 0.0025f
+    private val nUpdates = 50
 
     private val physicalBodies = mutableMapOf<String, PhysicalBody>()
     private val collisionMap = CollisionMap()
-    private val colliders = mutableMapOf<String, Collider>()
+    private val colliders = mutableMapOf<String, CollisionBox>()
 
     fun onUpdate() {
         for (updates in 0 until nUpdates) {
@@ -44,16 +41,22 @@ class PhysicsEngine() {
     private fun updatePhysicalBodies() {
         physicalBodies.keys.forEach { id ->
             physicalBodies[id]?.let {
-                MovementSolver.computeVerlet(it, step)
+                if(!it.isStatic)
+                    MovementSolver.computeVerlet(it, step)
             }
         }
     }
 
     //** Collisions **//
-    fun createCollider(id: String, radius: Float) {
-        val body = physicalBodies[id] ?: return
-        val c = CircleCollider(body, radius)
-        colliders[id] = c
+    fun createCircleCollider(body: PhysicalBody) {
+        val c = CircleCollisionBox(body)
+        colliders[body.id] = c
+        collisionMap.addCollider(c)
+    }
+
+    fun createBoxCollider(body: PhysicalBody) {
+        val c = RectangleCollisionBox(body)
+        colliders[body.id] = c
         collisionMap.addCollider(c)
     }
 
@@ -77,9 +80,10 @@ class PhysicsEngine() {
                     val collider0 = colliders[uuid0] ?: continue
                     val collider1 = colliders[uuid1] ?: continue
 
+                    /*
                     if (collider0.collisionVectors.keys.contains(uuid1) ||
                         !collider0.aabb.collidesWith(collider1.aabb)
-                    ) continue
+                    ) continue*/
 
                     collider0.collideWith(collider1)
                 }
@@ -90,10 +94,11 @@ class PhysicsEngine() {
     private fun updateCollidingBodies() {
         for (collider in colliders.values) {
             for (v in collider.collisionVectors) {
-                val c0 = colliders[v.value.id0] as? CircleCollider ?: continue
-                val c1 = colliders[v.value.id1] as? CircleCollider ?: continue
-                CollisionSolver.computeStaticResolution(c0, c1, v.value)
-                CollisionSolver.computeElasticCollision(c0, c1, v.value)
+                val c0 = colliders[v.value.id0]!!
+                val c1 = colliders[v.value.id1]!!
+
+                CollisionSolver.computeStaticCollision(c0, c1, v.value)
+                CollisionSolver.computeDynamicCollision(c0, c1, v.value)
             }
             collider.collisionVectors.clear()
         }

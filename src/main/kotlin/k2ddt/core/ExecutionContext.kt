@@ -1,35 +1,40 @@
 package k2ddt.core
 
-import k2ddt.physics.PhysicsEngine
-import k2ddt.physics.dto.PhysicalBody
 import k2ddt.render.RenderEngine
 import k2ddt.render.dto.*
 import k2ddt.sound.SoundEngine
 import k2ddt.sound.dto.Sound
 import k2ddt.ui.UIEngine
-import org.joml.Vector2f
 
-class ExecutionContext(
-    configuration: EngineConfiguration = EngineConfiguration.default(),
-    delegate: ExecutionDelegate? = null
+class ExecutionContext private constructor() {
 
-) {
+    lateinit var engine: CoreEngine
+    lateinit var graphics: RenderEngine
+    lateinit var audio: SoundEngine
+    //private val physics: PhysicsEngine
+    lateinit var ui: UIEngine
 
-    private val engine: CoreEngine
-    private val graphics: RenderEngine
-    private val audio: SoundEngine
-    private val physics: PhysicsEngine
-    private val ui: UIEngine
+    companion object {
+        private var instance: ExecutionContext? = null
 
-    init {
+        fun getInstance(): ExecutionContext {
+            if(instance == null) {
+                instance = ExecutionContext()
+            }
+            return instance!!
+        }
+    }
+
+    fun setup(configuration: EngineConfiguration = EngineConfiguration.default(),
+              delegate: ExecutionDelegate? = null) {
         graphics = RenderEngine(
             configuration.resolutionWidth,
             configuration.resolutionHeight
         )
         ui = UIEngine(configuration)
         audio = SoundEngine()
-        physics = PhysicsEngine()
-        engine = CoreEngine(configuration, graphics, ui, audio, physics, delegate)
+        //physics = PhysicsEngine()
+        engine = CoreEngine(configuration, graphics, ui, audio, delegate)
         delegate?.executionContext = this
     }
 
@@ -77,20 +82,25 @@ class ExecutionContext(
         audio.playSound(sound)
     }
 
-    fun createPhysicalBody(body: PhysicalBody) {
+    /*
+    protected fun createPhysicalBody(body: PhysicalBody) {
         physics.createPhysicalBody(body)
     }
 
-    fun createCircleCollider(uuid: String, radius: Float) {
-        physics.createCollider(uuid, radius)
+    protected fun createCircleCollider(uuid: String, radius: Float) {
+        physics.createCircleCollider(uuid, radius)
     }
 
-    fun getPhysicalBody(uuid: String): PhysicalBody? {
+    protected fun createBoxCollider(uuid: String, radius: Float) {
+        physics.createBoxCollider(uuid, radius)
+    }
+
+    protected fun getPhysicalBody(uuid: String): PhysicalBody? {
         return physics.getPhysicalBody(uuid)
     }
 
-    fun applyForce(uuid: String, force: Vector2f) {
+    protected fun applyForce(uuid: String, force: Vector2f) {
         physics.applyForce(uuid, force)
-    }
+    }*/
 
 }

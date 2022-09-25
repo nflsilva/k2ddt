@@ -13,7 +13,7 @@ class CollisionMap() {
     private val chunksPerBody = mutableMapOf<String, MutableSet<Vector2i>>()
     private val map: MutableMap<Int, MutableMap<Int, MutableSet<String>>> = mutableMapOf()
 
-    fun updateColliderChunks(collider: Collider) {
+    fun updateColliderChunks(collider: CollisionBox) {
         removeCollider(collider)
         addCollider(collider)
     }
@@ -26,17 +26,18 @@ class CollisionMap() {
         return map[row]?.get(column)?.toList() ?: listOf()
     }
 
-    fun addCollider(collider: Collider) {
-        val minRow = floor(collider.aabb.bottom / verticalChunkSize).toInt()
-        val maxRow = ceil(collider.aabb.top / verticalChunkSize).toInt()
+    fun addCollider(collisionBox: CollisionBox) {
 
-        val minColumn = floor(collider.aabb.left / horizontalChunkSize).toInt()
-        val maxColumn = ceil(collider.aabb.right / horizontalChunkSize).toInt()
+        val minRow = floor(collisionBox.bottom / verticalChunkSize).toInt()
+        val maxRow = ceil(collisionBox.top / verticalChunkSize).toInt()
 
-        var chunkPerBody = chunksPerBody[collider.body.id]
+        val minColumn = floor(collisionBox.left / horizontalChunkSize).toInt()
+        val maxColumn = ceil(collisionBox.right / horizontalChunkSize).toInt()
+
+        var chunkPerBody = chunksPerBody[collisionBox.body.id]
         if (chunkPerBody == null) {
             chunkPerBody = mutableSetOf()
-            chunksPerBody[collider.body.id] = chunkPerBody
+            chunksPerBody[collisionBox.body.id] = chunkPerBody
         }
 
         for (r in minRow until maxRow) {
@@ -54,7 +55,7 @@ class CollisionMap() {
                     row[c] = chunk
                 }
 
-                chunk.add(collider.body.id)
+                chunk.add(collisionBox.body.id)
                 if(chunk.size > 1) {
                     activeChunks["$c:$r"] = Vector2i(c, r)
                 }
@@ -64,7 +65,7 @@ class CollisionMap() {
         }
     }
 
-    fun removeCollider(collider: Collider) {
+    fun removeCollider(collider: CollisionBox) {
         val chunks = chunksPerBody[collider.body.id] ?: return
         chunks.forEach {
             val bodiesInChunk = map[it.y]?.get(it.x)

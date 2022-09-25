@@ -171,7 +171,8 @@ private class Delegate : ExecutionDelegate() {
 fun main(args: Array<String>) {
 
     val delegate = Delegate()
-    val ec = ExecutionContext(delegate = delegate)
+    val ec = ExecutionContext.getInstance()
+    ec.setup(delegate = delegate)
     ec.start()
 
     println("Done!")
