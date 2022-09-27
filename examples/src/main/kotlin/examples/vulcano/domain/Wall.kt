@@ -1,4 +1,4 @@
-package examples.collisions.domain
+package examples.vulcano.domain
 
 import examples.collisions.pe
 import k2ddt.core.ExecutionContext
@@ -18,26 +18,21 @@ class Wall(
     height: Float
 ): GameEntity() {
 
-    private val color = Color(1.0f)
+    private val color = Color(0f, 0f, 0f, 1f)
     override val transform = Transform(
         x,
         y,
         0f,
         width,
         height,
-        1,
-        true
+        1
     )
 
     init {
         val body = PhysicalBody(this, 0f, isStatic = true)
         pe.createPhysicalBody(body)
         pe.createBoxCollider(body)
-        //transform.rotate(0.25f)
-    }
-
-    fun tick(updateContext: UpdateContext) {
-        //transform.rotate(0.25f * updateContext.elapsedTime)
+        //transform.rotate(0.01f)
     }
 
     fun draw() {

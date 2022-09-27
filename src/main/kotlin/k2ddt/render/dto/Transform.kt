@@ -56,7 +56,7 @@ class Transform(
     }
 
     val center: Vector2f
-        get() = if(centered) position else Vector2f(position).add(Vector2f(scale).mul(0.5f))
+        get() = if(centered) position else Vector2f(position).add(Vector2f(scale.x / 2f, scale.y / 2f))
 
     val left: Float
         get() = position.x - if(centered) scale.x / 2f else 0f

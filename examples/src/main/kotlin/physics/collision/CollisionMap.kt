@@ -6,8 +6,8 @@ import kotlin.math.floor
 
 class CollisionMap() {
 
-    val verticalChunkSize = 64
-    val horizontalChunkSize = 64
+    val verticalChunkSize = 64 + 3000
+    val horizontalChunkSize = 64 + 3000
 
     private val activeChunks = mutableMapOf<String, Vector2i>()
     private val chunksPerBody = mutableMapOf<String, MutableSet<Vector2i>>()

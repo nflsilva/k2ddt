@@ -1,11 +1,12 @@
 package examples.vulcano
 
+import examples.collisions.pe
+import examples.vulcano.domain.Wall
 import examples.vulcano.domain.Ball
 import k2ddt.core.ExecutionContext
 import k2ddt.core.ExecutionDelegate
 import k2ddt.core.dto.UpdateContext
 import k2ddt.render.dto.Color
-import k2ddt.render.dto.Line
 import k2ddt.render.dto.Text
 import k2ddt.render.dto.Transform
 import k2ddt.tools.Log
@@ -16,49 +17,68 @@ import k2ddt.ui.dto.InputStateData
 private class Delegate : ExecutionDelegate() {
 
     private val balls = mutableListOf<Ball>()
-    private val gravity = Vector2f(0f, -9.8f * 1000f)
+    private val walls = mutableListOf<Wall>()
+
+    private val gravity = Vector2f(0f, 9.8f * 2000f)
 
     private val leftLimit = 300f
     private val rightLimit = 800f
     private val bottomLimit = 10f
-    private val topLimit = 700f
+    private val topLimit = 500f
     private var ballSize = 10f
     private var lastPrint = 0.0
     private var heatLocation = 1f
     private val heatWindow = 100
     private val heatEnergy = 10f
+    private val wallSize = 10f
 
 
     override fun onStart() {
 
-        executionContext.setBackgroundColor(Color(0.0f))
+        executionContext.setBackgroundColor(Color(1.0f))
 
-        addBall(300f, 320f)
+        walls.add(Wall(leftLimit, bottomLimit, rightLimit - leftLimit + wallSize, wallSize * 2))
+        walls.add(Wall(leftLimit, topLimit + 10f, rightLimit - leftLimit + wallSize, wallSize * 2))
+
+        walls.add(Wall(leftLimit, bottomLimit, wallSize, topLimit-bottomLimit))
+        walls.add(Wall(rightLimit, bottomLimit, wallSize, topLimit-bottomLimit))
+
+        addBall(leftLimit + ballSize * 3f, 320f)
+        addBall(leftLimit + ballSize * 3f, 340f)
+        addBall(leftLimit + ballSize * 3f, 360f)
+
+        addBall(leftLimit + ballSize * 7f, 320f)
+        addBall(leftLimit + ballSize * 12f, 320f)
+        //addBall(leftLimit + ballSize * 15f, 340f)
+        //addBall(leftLimit + ballSize * 4f, 360f)
     }
 
     override fun onUpdate(updateContext: UpdateContext) {
 
-        for (b0i in 0 until balls.size) {
+        pe.onUpdate()
 
-            val ball0 = balls[b0i]
-            ball0.applyForce(gravity)
-            ball0.tick(updateContext)
+        for (b in balls) {
 
-            for (b1i in b0i + 1 until balls.size) {
-                val ball1 = balls[b1i]
-                ball0.collideWith(ball1)
-            }
+            b.applyForce(gravity)
+            b.tick(updateContext)
 
-            if(ball0.y < (bottomLimit + ball0.radius * 8)) {
-                ball0.heatUp(heatEnergy)
+            /*
+            if(b.pos.y < (bottomLimit + 100f)) {
+                b.heatUp(heatEnergy)
 
                 val center = leftLimit + ((rightLimit-leftLimit) / 2) * heatLocation
-                if(ball0.x < center + heatWindow && ball0.x > center - heatWindow) {
-                    ball0.heatUp(heatEnergy)
+                if(b.pos.x < center + heatWindow && b.pos.x > center - heatWindow) {
+                    b.heatUp(heatEnergy)
+                }
+            }*/
+
+            val cs = pe.getCollisions(b.uuid)
+            for(c in cs) {
+                balls.find { it.uuid == c.otherId }?.let { other ->
+                    b.computeEnergyTransfer(other)
                 }
             }
 
-            applyLimits(ball0)
         }
 
         handleInput(updateContext.input)
@@ -68,18 +88,7 @@ private class Delegate : ExecutionDelegate() {
 
     override fun onFrame() {
         balls.forEach { it.draw(executionContext) }
-        executionContext.render(
-            Line(leftLimit, bottomLimit, leftLimit, bottomLimit + topLimit, Color((1f))), Transform(1)
-        )
-        executionContext.render(
-            Line(rightLimit, bottomLimit, rightLimit, bottomLimit + topLimit, Color((1f))), Transform(1)
-        )
-        executionContext.render(
-            Line(leftLimit, bottomLimit, rightLimit, bottomLimit, Color((1f))), Transform(1)
-        )
-        executionContext.render(
-            Line(leftLimit, topLimit, rightLimit, topLimit, Color((1f))), Transform(1)
-        )
+        walls.forEach { it.draw() }
 
         executionContext.render(
             Text("${balls.size} balls", 32f, Color(1f)),
@@ -124,25 +133,11 @@ private class Delegate : ExecutionDelegate() {
     }
 
     private fun spawnBallCollection() {
-        var x = leftLimit + ballSize
+        var x = leftLimit + ballSize * 5f
 
         while (x < rightLimit) {
-            addBall(x, 400f * Random().nextFloat())
-            x += ballSize
-        }
-    }
-
-    private fun applyLimits(ball: Ball) {
-        if (ball.x + ball.radius > rightLimit) {
-            ball.x = rightLimit - ball.radius
-        } else if (ball.x - ball.radius < leftLimit) {
-            ball.x = leftLimit + ball.radius
-        }
-
-        if (ball.y - ball.radius < bottomLimit) {
-            ball.y = bottomLimit + ball.radius
-        } else if (ball.y + ball.radius > topLimit) {
-            ball.y = topLimit - ball.radius
+            addBall(x, 360f)
+            x += ballSize * 4f
         }
     }
 

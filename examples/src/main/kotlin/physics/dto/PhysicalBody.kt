@@ -22,6 +22,7 @@ import org.joml.Vector2f
 class PhysicalBody(
     val entity: GameEntity,
     var mass: Float = 0f,
+    var drag: Float = 0f,
     var velocity: Vector2f = Vector2f().zero(),
     var acceleration: Vector2f = Vector2f().zero(),
     var oldPosition: Vector2f = entity.position,

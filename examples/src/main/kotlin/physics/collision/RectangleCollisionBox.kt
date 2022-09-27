@@ -39,10 +39,13 @@ class RectangleCollisionBox(body: PhysicalBody) : CollisionBox(body) {
     private fun updatePoints()  {
         val delta = body.rotation - lastRotation
         lastRotation = body.rotation
-        val rm = Matrix2f().rotation(-delta)
-        for(p in points) {
-            p.sub(center).mul(rm).add(center)
+        if(delta != 0f) {
+            val rm = Matrix2f().rotation(-delta)
+            for(p in points) {
+                p.sub(center).mul(rm).add(center)
+            }
         }
+
     }
 
 }

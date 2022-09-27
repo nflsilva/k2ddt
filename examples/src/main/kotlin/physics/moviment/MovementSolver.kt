@@ -14,7 +14,7 @@ class MovementSolver {
 
             if(body.computeVelocity) {
                 body.velocity = Vector2f(body.position)
-                    .sub(body.oldPosition)
+                    .sub(body.oldPosition).mul(1f - body.drag)
             }
             body.computeVelocity = true
 

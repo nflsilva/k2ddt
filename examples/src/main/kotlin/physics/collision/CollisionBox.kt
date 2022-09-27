@@ -6,7 +6,7 @@ import org.joml.Vector2f
 abstract class CollisionBox(val body: PhysicalBody) {
 
     val center = body.center
-    val collisionVectors = mutableMapOf<String, CollisionVector>()
+    val collisionVectors = mutableListOf<CollisionVector>()
 
     abstract val top: Float
     abstract val bottom: Float
@@ -16,12 +16,12 @@ abstract class CollisionBox(val body: PhysicalBody) {
     fun collideWith(collisionBox: CollisionBox) {
         (collisionBox as? CircleCollisionBox)?.let {
             collideWith(it)?.let { cv ->
-                collisionVectors[this.body.id] = cv
+                collisionVectors.add(cv)
             }
         }
         (collisionBox as? RectangleCollisionBox)?.let {
             collideWith(it)?.let { cv ->
-                collisionVectors[this.body.id] = cv
+                collisionVectors.add(cv)
             }
         }
     }

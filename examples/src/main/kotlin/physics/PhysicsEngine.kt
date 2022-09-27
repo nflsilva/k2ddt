@@ -7,8 +7,8 @@ import org.joml.Vector2f
 
 class PhysicsEngine() {
 
-    private val step = 0.0025f
-    private val nUpdates = 50
+    private val step = 0.01f
+    private val nUpdates = 10
 
     private val physicalBodies = mutableMapOf<String, PhysicalBody>()
     private val collisionMap = CollisionMap()
@@ -41,8 +41,10 @@ class PhysicsEngine() {
     private fun updatePhysicalBodies() {
         physicalBodies.keys.forEach { id ->
             physicalBodies[id]?.let {
-                if(!it.isStatic)
+                if(!it.isStatic) {
                     MovementSolver.computeVerlet(it, step)
+                }
+
             }
         }
     }
@@ -60,6 +62,10 @@ class PhysicsEngine() {
         collisionMap.addCollider(c)
     }
 
+    fun getCollisions(id: String): List<CollisionVector> {
+        return colliders[id]?.collisionVectors?.toList() ?: listOf()
+    }
+
     private fun updateCollisionMap() {
         for (c in colliders.values) {
             collisionMap.updateColliderChunks(c)
@@ -68,6 +74,7 @@ class PhysicsEngine() {
 
     private fun computeCollisions() {
         val activeChunks = collisionMap.getChunksWithColliders()
+
         for (chunk in activeChunks) {
 
             val collidersInChunk = collisionMap.getCollidersAt(chunk.y, chunk.x)
@@ -80,8 +87,7 @@ class PhysicsEngine() {
                     val collider0 = colliders[uuid0] ?: continue
                     val collider1 = colliders[uuid1] ?: continue
 
-                    /*
-                    if (collider0.collisionVectors.keys.contains(uuid1) ||
+                    /*if (collider0.collisionVectors.keys.contains(uuid1) ||
                         !collider0.aabb.collidesWith(collider1.aabb)
                     ) continue*/
 
@@ -94,11 +100,11 @@ class PhysicsEngine() {
     private fun updateCollidingBodies() {
         for (collider in colliders.values) {
             for (v in collider.collisionVectors) {
-                val c0 = colliders[v.value.id0]!!
-                val c1 = colliders[v.value.id1]!!
+                val c0 = colliders[v.thisId]!!
+                val c1 = colliders[v.otherId]!!
 
-                CollisionSolver.computeStaticCollision(c0, c1, v.value)
-                CollisionSolver.computeDynamicCollision(c0, c1, v.value)
+                CollisionSolver.computeStaticCollision(c0, c1, v)
+                //CollisionSolver.computeDynamicCollision(c0, c1, v)
             }
             collider.collisionVectors.clear()
         }

@@ -6,13 +6,7 @@ import k2ddt.core.ExecutionContext
 import k2ddt.core.ExecutionDelegate
 import k2ddt.core.dto.UpdateContext
 import k2ddt.physics.PhysicsEngine
-import k2ddt.render.RenderEngine
 import k2ddt.render.dto.Color
-import k2ddt.render.dto.Line
-import k2ddt.render.dto.Transform
-import k2ddt.tools.Log
-import org.joml.Vector2f
-import java.text.DecimalFormat
 
 val pe = PhysicsEngine()
 
@@ -28,19 +22,21 @@ private class Delegate : ExecutionDelegate() {
         //executionContext.setBackgroundColor(Color(0.0f))
 
         //balls.add(Ball(600f, 500f, 200f, Color(1f), executionContext))
-        balls.add(Ball(300f, 500f, 50f, Color(1f)))
+        balls.add(Ball(0f, 0f, 50f, Color(1f)))
         balls.add(Ball(600f, 500f, 100f, Color(1f)))
 
-        walls.add(Wall(100f, 0f, 1080f, 10f))
-        walls.add(Wall(100f, 710f, 1080f, 10f))
+        //walls.add(Wall(100f, 0f, 1080f, 10f))
+        walls.add(Wall(1280f / 2, 200f, 500f, 50f))
 
-        walls.add(Wall(100f, 0f, 10f, 720f))
-        walls.add(Wall(1180f, 0f, 10f, 720f))
+        //walls.add(Wall(100f, 0f, 10f, 720f))
+        //walls.add(Wall(1180f, 0f, 10f, 720f))
         //walls.add(Wall(500f, 100f, 500f, 50f))
         //walls.add(Wall(0f, 0f, 1260f, 20f))
     }
 
     override fun onUpdate(updateContext: UpdateContext) {
+
+        pe.onUpdate()
 
         balls.forEach { it.tick(updateContext) }
         walls.forEach { it.tick(updateContext) }
@@ -60,8 +56,6 @@ private class Delegate : ExecutionDelegate() {
                 ball0.collideWith(wall)
             }
         }*/
-
-        pe.onUpdate()
 
         printProfiling()
 

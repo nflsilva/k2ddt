@@ -1,6 +1,9 @@
 package k2ddt.physics.collision
 
 import k2ddt.core.ExecutionContext
+import k2ddt.render.dto.Color
+import k2ddt.render.dto.Shape
+import k2ddt.render.dto.Transform
 import org.joml.Math.clamp
 import org.joml.Vector2f
 import java.lang.Float.max
@@ -17,7 +20,7 @@ class CollisionSolver {
             val delta = distance - r2
 
             if (delta < 0) {
-                return CollisionVector(c0.body.id, c1.body.id, distance, delta, distanceVector.normalize())
+                return CollisionVector(c0.body.id, c1.body.id, delta, distanceVector.normalize())
             }
             return null
         }
@@ -28,51 +31,67 @@ class CollisionSolver {
 
             val ee = ExecutionContext.getInstance()
             val points = b0.getPoints()
+            for (p in points) {
+                ee.render(
+                    Shape(Shape.Type.CIRCLE, Color(0f, 1f, 0f, 1f)),
+                    Transform(p.x, p.y, 0f, 10f, 10f, 0, centered = true)
+                )
+            }
+
             val slope = (points[1].y - points[0].y) / (points[1].x - points[0].x)
             val isAxisAligned = slope == 0f || slope == Float.POSITIVE_INFINITY
 
             var mxi = 0f
             var myi = 0f
             var collisionVector: CollisionVector? = null
-
+            var minDistance = 100000f
 
             if (isAxisAligned) {
-                if (c0.top > b0.bottom && c0.bottom < b0.bottom) {
+                if (
+                    c0.top > b0.bottom &&
+                    c0.bottom < b0.bottom &&
+                    !(c0.left > b0.right || c0.right < b0.left)
+                ) {
                     val delta = c0.top - b0.bottom
                     return CollisionVector(
                         c0.body.id,
                         b0.body.id,
-                        c0.radius - delta,
                         delta,
                         Vector2f(0f, -1f)
                     )
-                }
-                else if (c0.bottom < b0.top && c0.top > b0.top) {
+                } else if (
+                    c0.bottom < b0.top &&
+                    c0.top > b0.top &&
+                    !(c0.left > b0.right || c0.right < b0.left)
+                ) {
                     val delta = b0.top - c0.bottom
                     return CollisionVector(
                         c0.body.id,
                         b0.body.id,
-                        c0.radius - delta,
                         delta,
                         Vector2f(0f, 1f)
                     )
-                }
-                else if (c0.left < b0.right && c0.right > b0.right) {
+                } else if (
+                    c0.left < b0.right &&
+                    c0.right > b0.right &&
+                    !(c0.bottom > b0.top || c0.top < b0.bottom)
+                ) {
                     val delta = b0.right - c0.left
                     return CollisionVector(
                         c0.body.id,
                         b0.body.id,
-                        c0.radius - delta,
                         delta,
                         Vector2f(1f, 0f)
                     )
-                }
-                else if (c0.right > b0.left && c0.left < b0.left) {
+                } else if (
+                    c0.right > b0.left &&
+                    c0.left < b0.left &&
+                    !(c0.bottom > b0.top || c0.top < b0.bottom)
+                ) {
                     val delta = c0.right - b0.left
                     return CollisionVector(
                         c0.body.id,
                         b0.body.id,
-                        c0.radius - delta,
                         delta,
                         Vector2f(-1f, 0f)
                     )
@@ -85,7 +104,8 @@ class CollisionSolver {
                     val a1 = (pointB.y - pointA.y) / (pointB.x - pointA.x)
                     val b1 = pointB.y - a1 * pointB.x
 
-                    val a2 = 1 / -a1
+                    val normal = Vector2f(-(pointB.y - pointA.y), pointB.x - pointA.x).normalize()
+                    val a2 = normal.y / normal.x
                     val b2 = circleCenter.y - a2 * circleCenter.x
 
                     val minX = min(pointA.x, pointB.x)
@@ -98,31 +118,30 @@ class CollisionSolver {
 
                     val distanceVector = Vector2f(xi, yi).sub(circleCenter)
                     val distance = distanceVector.length()
-                    val delta = distance - c0.radius
+                    val delta = c0.radius - distance
 
-                    if (delta < 0) {
-                        if (collisionVector == null || collisionVector.distance > distance) {
+                    if (delta > 0) {
+                        if (collisionVector == null || minDistance > distance) {
                             mxi = xi
                             myi = yi
+                            minDistance = distance
                             collisionVector =
                                 CollisionVector(
                                     c0.body.id,
                                     b0.body.id,
-                                    distance,
                                     delta,
-                                    Vector2f(pointB.y - pointA.y, -(pointB.x - pointA.x)).normalize()
+                                    normal
                                 )
                         }
                     }
                 }
             }
 
-            /* TODO: Remove
-                ee.render(
-                    Shape(Shape.Type.CIRCLE, Color(1f, 0f, 0f, 1f)),
-                    Transform(Vector2f(mxi, myi), 0f, Vector2f(10f), 0, centered = true)
+            ee.render(
+                Shape(Shape.Type.CIRCLE, Color(1f, 0f, 0f, 1f)),
+                Transform(Vector2f(mxi, myi), 0f, Vector2f(10f), 0, centered = true)
             )
-            */
+
 
             return collisionVector
         }
@@ -162,8 +181,7 @@ class CollisionSolver {
                     c0.body.mass,
                     c1.body.mass,
                     c0.body.velocity,
-                    c1.body.velocity,
-                    v.distance
+                    c1.body.velocity
                 )
 
                 v1 = computeElasticVelocity(
@@ -172,8 +190,7 @@ class CollisionSolver {
                     c1.body.mass,
                     c0.body.mass,
                     c1.body.velocity,
-                    c0.body.velocity,
-                    v.distance
+                    c0.body.velocity
                 )
             } else if (!c0.body.isStatic) {
                 v0 = Vector2f(c0.body.velocity).sub(Vector2f(v.normal).mul(c0.body.velocity.dot(v.normal) * 2))
@@ -198,9 +215,10 @@ class CollisionSolver {
             m0: Float,
             m1: Float,
             v0: Vector2f,
-            v1: Vector2f,
-            d: Float
+            v1: Vector2f
         ): Vector2f {
+
+            val d = Vector2f(x1).sub(x0).length()
 
             val massAux = 2 * m1 / (m0 + m1)
 
