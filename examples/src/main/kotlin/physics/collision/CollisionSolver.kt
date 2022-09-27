@@ -142,27 +142,27 @@ class CollisionSolver {
             var v0 = Vector2f(0f)
             var v1 = Vector2f(0f)
             if (!c0.body.isStatic && !c1.body.isStatic) {
-                v0 = computeElasticVelocity(
-                    c0.body.position,
-                    c1.body.position,
+                v0 = computeVelocity(
                     c0.body.mass,
                     c1.body.mass,
                     c0.body.velocity,
-                    c1.body.velocity
+                    c1.body.velocity,
+                    c0.body.restituition
                 )
 
-                v1 = computeElasticVelocity(
-                    c1.body.position,
-                    c0.body.position,
+                v1 = computeVelocity(
                     c1.body.mass,
                     c0.body.mass,
                     c1.body.velocity,
-                    c0.body.velocity
+                    c0.body.velocity,
+                    c1.body.restituition
                 )
             } else if (!c0.body.isStatic) {
                 v0 = Vector2f(c0.body.velocity).sub(Vector2f(v.normal).mul(c0.body.velocity.dot(v.normal) * 2))
+                    .mul(c0.body.restituition)
             } else if (!c1.body.isStatic) {
                 v1 = Vector2f(c1.body.velocity).sub(Vector2f(v.normal).mul(c1.body.velocity.dot(v.normal) * 2))
+                    .mul(c1.body.restituition)
             }
 
             c0.body.apply {
@@ -176,7 +176,7 @@ class CollisionSolver {
             }
         }
 
-        private fun computeElasticVelocity(
+        private fun computeVelocityOld(
             x0: Vector2f,
             x1: Vector2f,
             m0: Float,
@@ -198,5 +198,25 @@ class CollisionSolver {
             val bigAux = distanceAux.mul(massAux * crossAux)
             return Vector2f(v0).sub(bigAux)
         }
+
+        private fun computeVelocity(
+            ma: Float,
+            mb: Float,
+            ua: Vector2f,
+            ub: Vector2f,
+            cr: Float
+        ): Vector2f {
+
+            // v' = Cr * mb (vb - va) + ma * va + mb * vb
+            val ubua = Vector2f(ub).sub(ua)
+            val mava = Vector2f(ua).mul(ma)
+            val mbvb = Vector2f(ub).mul(mb)
+            val mamb = ma + mb
+
+            val numerator = Vector2f(ubua).mul(cr * mb).add(mava).add(mbvb)
+
+            return numerator.div(mamb)
+        }
+
     }
 }

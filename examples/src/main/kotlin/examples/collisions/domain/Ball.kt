@@ -39,7 +39,7 @@ class Ball(
     private var v = Vector2f(0f)
 
     init {
-        val body = PhysicalBody(this, mass)
+        val body = PhysicalBody(this, mass, 1f)
         pe.createPhysicalBody(body)
         pe.createCircleCollider(body)
     }

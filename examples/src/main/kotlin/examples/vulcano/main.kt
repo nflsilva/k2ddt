@@ -62,7 +62,7 @@ private class Delegate : ExecutionDelegate() {
             b.applyForce(gravity)
             b.tick(updateContext)
 
-
+            /*
             if(b.pos.y < (bottomLimit + 100f)) {
                 b.heatUp(heatEnergy)
 
@@ -70,7 +70,7 @@ private class Delegate : ExecutionDelegate() {
                 if(b.pos.x < center + heatWindow && b.pos.x > center - heatWindow) {
                     b.heatUp(heatEnergy)
                 }
-            }
+            }*/
 
             val cs = pe.getCollisions(b.uuid)
             for(c in cs) {

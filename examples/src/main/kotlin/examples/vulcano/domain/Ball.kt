@@ -42,7 +42,7 @@ class Ball(
     var collisions: MutableList<Ball> = mutableListOf()
 
     init {
-        val body = PhysicalBody(this, mass)
+        val body = PhysicalBody(this, mass, restituition = 1.0f)
         pe.createPhysicalBody(body)
         pe.createCircleCollider(body)
     }

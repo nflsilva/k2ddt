@@ -104,7 +104,7 @@ class PhysicsEngine() {
                 val c1 = colliders[v.otherId]!!
 
                 CollisionSolver.computeStaticCollision(c0, c1, v)
-                //CollisionSolver.computeDynamicCollision(c0, c1, v)
+                CollisionSolver.computeDynamicCollision(c0, c1, v)
             }
             collider.collisionVectors.clear()
         }
