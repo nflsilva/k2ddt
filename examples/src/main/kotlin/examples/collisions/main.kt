@@ -22,16 +22,17 @@ private class Delegate : ExecutionDelegate() {
         //executionContext.setBackgroundColor(Color(0.0f))
 
         //balls.add(Ball(600f, 500f, 200f, Color(1f), executionContext))
-        balls.add(Ball(0f, 0f, 50f, Color(1f)))
+        balls.add(Ball(30f, 40f, 50f, Color(1f)))
         balls.add(Ball(600f, 500f, 100f, Color(1f)))
 
         //walls.add(Wall(100f, 0f, 1080f, 10f))
         walls.add(Wall(1280f / 2, 200f, 500f, 50f))
 
-        //walls.add(Wall(100f, 0f, 10f, 720f))
-        //walls.add(Wall(1180f, 0f, 10f, 720f))
-        //walls.add(Wall(500f, 100f, 500f, 50f))
-        //walls.add(Wall(0f, 0f, 1260f, 20f))
+        val wallWith = 5f
+        walls.add(Wall(0f, 720f - wallWith, 1280f, wallWith))
+        walls.add(Wall(1280f - wallWith, 0f, wallWith, 720f))
+        walls.add(Wall(0f, 0f, wallWith, 720f))
+        walls.add(Wall(0f, 0f, 1280f, wallWith))
     }
 
     override fun onUpdate(updateContext: UpdateContext) {

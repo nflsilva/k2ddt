@@ -1,9 +1,5 @@
 package k2ddt.physics.collision
 
-import k2ddt.core.ExecutionContext
-import k2ddt.render.dto.Color
-import k2ddt.render.dto.Shape
-import k2ddt.render.dto.Transform
 import org.joml.Math.clamp
 import org.joml.Vector2f
 import java.lang.Float.max
@@ -28,76 +24,25 @@ class CollisionSolver {
         fun computeCollision(c0: CircleCollisionBox, b0: RectangleCollisionBox): CollisionVector? {
 
             val circleCenter = Vector2f(c0.center)
-
-            val ee = ExecutionContext.getInstance()
             val points = b0.getPoints()
-            for (p in points) {
-                ee.render(
-                    Shape(Shape.Type.CIRCLE, Color(0f, 1f, 0f, 1f)),
-                    Transform(p.x, p.y, 0f, 10f, 10f, 0, centered = true)
-                )
-            }
+            val topSlope = (points[1].y - points[0].y) / (points[1].x - points[0].x)
+            val isAxisAligned = topSlope == 0f || topSlope == Float.POSITIVE_INFINITY
 
-            val slope = (points[1].y - points[0].y) / (points[1].x - points[0].x)
-            val isAxisAligned = slope == 0f || slope == Float.POSITIVE_INFINITY
-
-            var mxi = 0f
-            var myi = 0f
-            var collisionVector: CollisionVector? = null
-            var minDistance = 100000f
-
+            val possibleIntersectionPoints = mutableListOf<Pair<Vector2f, Vector2f>>()
             if (isAxisAligned) {
-                if (
-                    c0.top > b0.bottom &&
-                    c0.bottom < b0.bottom &&
-                    !(c0.left > b0.right || c0.right < b0.left)
-                ) {
-                    val delta = c0.top - b0.bottom
-                    return CollisionVector(
-                        c0.body.id,
-                        b0.body.id,
-                        delta,
-                        Vector2f(0f, -1f)
-                    )
-                } else if (
-                    c0.bottom < b0.top &&
-                    c0.top > b0.top &&
-                    !(c0.left > b0.right || c0.right < b0.left)
-                ) {
-                    val delta = b0.top - c0.bottom
-                    return CollisionVector(
-                        c0.body.id,
-                        b0.body.id,
-                        delta,
-                        Vector2f(0f, 1f)
-                    )
-                } else if (
-                    c0.left < b0.right &&
-                    c0.right > b0.right &&
-                    !(c0.bottom > b0.top || c0.top < b0.bottom)
-                ) {
-                    val delta = b0.right - c0.left
-                    return CollisionVector(
-                        c0.body.id,
-                        b0.body.id,
-                        delta,
-                        Vector2f(1f, 0f)
-                    )
-                } else if (
-                    c0.right > b0.left &&
-                    c0.left < b0.left &&
-                    !(c0.bottom > b0.top || c0.top < b0.bottom)
-                ) {
-                    val delta = c0.right - b0.left
-                    return CollisionVector(
-                        c0.body.id,
-                        b0.body.id,
-                        delta,
-                        Vector2f(-1f, 0f)
-                    )
-                }
+
+                val cornerError = 0.0001f
+                val clampX = clamp(b0.left + cornerError, b0.right - cornerError, c0.center.x)
+                val clampY = clamp(b0.bottom + cornerError, b0.top - cornerError, c0.center.y)
+
+                possibleIntersectionPoints.add(Pair(Vector2f(clampX, b0.top), Vector2f(0f, 1f)))
+                possibleIntersectionPoints.add(Pair(Vector2f(clampX, b0.bottom), Vector2f(0f, -1f)))
+                possibleIntersectionPoints.add(Pair(Vector2f(b0.left, clampY), Vector2f(-1f, 0f)))
+                possibleIntersectionPoints.add(Pair(Vector2f(b0.right, clampY), Vector2f(1f, 0f)))
+
             } else {
                 for (i in points.indices) {
+
                     val pointA = Vector2f(points[i])
                     val pointB = Vector2f(points[(i + 1) % points.size])
 
@@ -108,40 +53,62 @@ class CollisionSolver {
                     val a2 = normal.y / normal.x
                     val b2 = circleCenter.y - a2 * circleCenter.x
 
+                    val rxi = (b2 - b1) / (a1 - a2)
+                    val rxy = a2 * rxi + b2
+
                     val minX = min(pointA.x, pointB.x)
                     val maxX = max(pointA.x, pointB.x)
                     val minY = min(pointA.y, pointB.y)
                     val maxY = max(pointA.y, pointB.y)
 
-                    val xi = clamp(minX, maxX, (b2 - b1) / (a1 - a2))
-                    val yi = clamp(minY, maxY, a2 * xi + b2)
+                    val xi = clamp(minX, maxX, rxi)
+                    val yi = clamp(minY, maxY, rxy)
 
-                    val distanceVector = Vector2f(xi, yi).sub(circleCenter)
-                    val distance = distanceVector.length()
-                    val delta = c0.radius - distance
+                    possibleIntersectionPoints.add(Pair(Vector2f(xi, yi), normal))
+                }
+            }
 
-                    if (delta > 0) {
-                        if (collisionVector == null || minDistance > distance) {
-                            mxi = xi
-                            myi = yi
-                            minDistance = distance
-                            collisionVector =
-                                CollisionVector(
-                                    c0.body.id,
-                                    b0.body.id,
-                                    delta,
-                                    normal
-                                )
-                        }
+            var mxi = 0f
+            var myi = 0f
+            var collisionVector: CollisionVector? = null
+            var minDistance = 100000f
+
+            for (p in possibleIntersectionPoints) {
+
+                val point = p.first
+                val normal = p.second
+
+                val distanceVector = Vector2f(point.x, point.y).sub(circleCenter)
+                val distance = distanceVector.length()
+                val delta = c0.radius - distance
+
+                if (delta > 0) {
+                    if (collisionVector == null || minDistance > distance) {
+                        mxi = point.x
+                        myi = point.y
+                        minDistance = distance
+                        collisionVector =
+                            CollisionVector(
+                                c0.body.id,
+                                b0.body.id,
+                                delta,
+                                normal
+                            )
                     }
                 }
             }
 
+            /*val ee = ExecutionContext.getInstance()
+            for (p in points) {
+                ee.render(
+                    Shape(Shape.Type.CIRCLE, Color(0f, 1f, 0f, 1f)),
+                    Transform(p.x, p.y, 0f, 10f, 10f, 0, centered = true)
+                )
+            }
             ee.render(
                 Shape(Shape.Type.CIRCLE, Color(1f, 0f, 0f, 1f)),
                 Transform(Vector2f(mxi, myi), 0f, Vector2f(10f), 0, centered = true)
-            )
-
+            )*/
 
             return collisionVector
         }

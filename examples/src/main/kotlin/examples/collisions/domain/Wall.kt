@@ -26,7 +26,7 @@ class Wall(
         width,
         height,
         1,
-        true
+        false
     )
 
     init {

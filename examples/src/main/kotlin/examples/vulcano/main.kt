@@ -19,26 +19,26 @@ private class Delegate : ExecutionDelegate() {
     private val balls = mutableListOf<Ball>()
     private val walls = mutableListOf<Wall>()
 
-    private val gravity = Vector2f(0f, 9.8f * 2000f)
+    private val gravity = Vector2f(0f, -9.8f * 2000f)
 
-    private val leftLimit = 300f
-    private val rightLimit = 800f
+    private val leftLimit = 100f
+    private val rightLimit = 1000f
     private val bottomLimit = 10f
-    private val topLimit = 500f
+    private val topLimit = 700f
     private var ballSize = 10f
     private var lastPrint = 0.0
     private var heatLocation = 1f
     private val heatWindow = 100
     private val heatEnergy = 10f
-    private val wallSize = 10f
+    private val wallSize = 3f
 
 
     override fun onStart() {
 
-        executionContext.setBackgroundColor(Color(1.0f))
+        executionContext.setBackgroundColor(Color(0.3f))
 
         walls.add(Wall(leftLimit, bottomLimit, rightLimit - leftLimit + wallSize, wallSize * 2))
-        walls.add(Wall(leftLimit, topLimit + 10f, rightLimit - leftLimit + wallSize, wallSize * 2))
+        walls.add(Wall(leftLimit, topLimit, rightLimit - leftLimit + wallSize, wallSize * 2))
 
         walls.add(Wall(leftLimit, bottomLimit, wallSize, topLimit-bottomLimit))
         walls.add(Wall(rightLimit, bottomLimit, wallSize, topLimit-bottomLimit))
@@ -62,7 +62,7 @@ private class Delegate : ExecutionDelegate() {
             b.applyForce(gravity)
             b.tick(updateContext)
 
-            /*
+
             if(b.pos.y < (bottomLimit + 100f)) {
                 b.heatUp(heatEnergy)
 
@@ -70,7 +70,7 @@ private class Delegate : ExecutionDelegate() {
                 if(b.pos.x < center + heatWindow && b.pos.x > center - heatWindow) {
                     b.heatUp(heatEnergy)
                 }
-            }*/
+            }
 
             val cs = pe.getCollisions(b.uuid)
             for(c in cs) {
@@ -92,7 +92,7 @@ private class Delegate : ExecutionDelegate() {
 
         executionContext.render(
             Text("${balls.size} balls", 32f, Color(1f)),
-            Transform(rightLimit + 200f, topLimit - bottomLimit / 2, 0)
+            Transform(rightLimit + 50f, topLimit - bottomLimit / 2, 0)
         )
     }
 
