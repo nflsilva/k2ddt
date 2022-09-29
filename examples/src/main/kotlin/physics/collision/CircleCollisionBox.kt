@@ -3,7 +3,10 @@ package k2ddt.physics.collision
 import k2ddt.physics.dto.PhysicalBody
 import java.lang.Float.max
 
-class CircleCollisionBox(body: PhysicalBody) : CollisionBox(body) {
+class CircleCollisionBox(
+    body: PhysicalBody,
+    onCollisionCallback: ((other: String) -> Unit)?
+) : CollisionBox(body, onCollisionCallback) {
 
     val radius = max(body.scale.x, body.scale.y) / 2f
 
@@ -23,5 +26,7 @@ class CircleCollisionBox(body: PhysicalBody) : CollisionBox(body) {
     override fun collideWith(box: RectangleCollisionBox): CollisionVector? {
         return CollisionSolver.computeCollision(this, box)
     }
+
+    override fun update() {}
 
 }

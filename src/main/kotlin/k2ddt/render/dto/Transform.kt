@@ -46,7 +46,9 @@ class Transform(
         centered: Boolean = false
     ) : this(Vector2f(positionX, positionY), rotation, Vector2f(scaleX, scaleY), layer, centered)
 
-    constructor(positionX: Float, positionY: Float,layer: Int) : this(positionX, positionY, 0f, 1f, 1f, layer)
+    constructor(positionX: Float, positionY: Float, layer: Int, centered: Boolean = true) :
+            this(positionX, positionY, 0f, 1f, 1f, layer, centered)
+
     constructor(layer: Int) : this(0f, 0f, 0f, 1f, 1f, layer)
 
     init {

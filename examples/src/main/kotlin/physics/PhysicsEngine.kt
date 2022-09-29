@@ -11,13 +11,11 @@ class PhysicsEngine() {
     private val nUpdates = 10
 
     private val physicalBodies = mutableMapOf<String, PhysicalBody>()
-    private val collisionMap = CollisionMap()
-    private val colliders = mutableMapOf<String, CollisionBox>()
+    private val collisionBoxes = mutableMapOf<String, CollisionBox>()
 
     fun onUpdate() {
         for (updates in 0 until nUpdates) {
             updatePhysicalBodies()
-            updateCollisionMap()
             computeCollisions()
             updateCollidingBodies()
         }
@@ -32,6 +30,11 @@ class PhysicsEngine() {
         return physicalBodies[id]
     }
 
+    fun removePhysicalBody(id: String) {
+        collisionBoxes.remove(id)
+        physicalBodies.remove(id)
+    }
+
     fun applyForce(id: String, force: Vector2f) {
         physicalBodies[id]?.let { body ->
             body.acceleration.add(force.div(body.mass))
@@ -41,67 +44,49 @@ class PhysicsEngine() {
     private fun updatePhysicalBodies() {
         physicalBodies.keys.forEach { id ->
             physicalBodies[id]?.let {
-                if(!it.isStatic) {
-                    MovementSolver.computeVerlet(it, step)
+                when(it.type) {
+                    PhysicalBody.Type.VERLET -> MovementSolver.computeVerlet(it, step)
+                    PhysicalBody.Type.EULER -> MovementSolver.computeVerlet(it, step)
+                    else -> return
                 }
-
             }
         }
     }
 
     //** Collisions **//
-    fun createCircleCollider(body: PhysicalBody) {
-        val c = CircleCollisionBox(body)
-        colliders[body.id] = c
-        collisionMap.addCollider(c)
+    fun createCircleCollider(body: PhysicalBody, onCollisionCallback: ((other: String) -> Unit)? = null) {
+        val c = CircleCollisionBox(body, onCollisionCallback)
+        collisionBoxes[body.id] = c
     }
 
-    fun createBoxCollider(body: PhysicalBody) {
-        val c = RectangleCollisionBox(body)
-        colliders[body.id] = c
-        collisionMap.addCollider(c)
+    fun createBoxCollider(body: PhysicalBody, onCollisionCallback: ((other: String) -> Unit)? = null) {
+        val c = RectangleCollisionBox(body, onCollisionCallback)
+        collisionBoxes[body.id] = c
     }
 
     fun getCollisions(id: String): List<CollisionVector> {
-        return colliders[id]?.collisionVectors?.toList() ?: listOf()
-    }
-
-    private fun updateCollisionMap() {
-        for (c in colliders.values) {
-            collisionMap.updateColliderChunks(c)
-        }
+        return collisionBoxes[id]?.collisionVectors?.toList() ?: listOf()
     }
 
     private fun computeCollisions() {
-        val activeChunks = collisionMap.getChunksWithColliders()
-
-        for (chunk in activeChunks) {
-
-            val collidersInChunk = collisionMap.getCollidersAt(chunk.y, chunk.x)
-
-            for (b0i in collidersInChunk.indices) {
-
-                val uuid0 = collidersInChunk[b0i]
-                for (b1i in b0i + 1 until collidersInChunk.size) {
-                    val uuid1 = collidersInChunk[b1i]
-                    val collider0 = colliders[uuid0] ?: continue
-                    val collider1 = colliders[uuid1] ?: continue
-
-                    /*if (collider0.collisionVectors.keys.contains(uuid1) ||
-                        !collider0.aabb.collidesWith(collider1.aabb)
-                    ) continue*/
-
-                    collider0.collideWith(collider1)
-                }
+        val boxes = collisionBoxes.values.toList()
+        for (i0 in boxes.indices) {
+            val cb0 = boxes[i0]
+            for (i1 in i0 + 1 until boxes.size) {
+                val cb1 = boxes[i1]
+                cb0.update()
+                cb1.update()
+                cb0.collideWith(cb1)
             }
         }
+
     }
 
     private fun updateCollidingBodies() {
-        for (collider in colliders.values) {
+        for (collider in collisionBoxes.values) {
             for (v in collider.collisionVectors) {
-                val c0 = colliders[v.thisId]!!
-                val c1 = colliders[v.otherId]!!
+                val c0 = collisionBoxes[v.thisId]!!
+                val c1 = collisionBoxes[v.otherId]!!
 
                 CollisionSolver.computeStaticCollision(c0, c1, v)
                 CollisionSolver.computeDynamicCollision(c0, c1, v)

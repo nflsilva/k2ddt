@@ -1,5 +1,10 @@
 package k2ddt.physics.collision
 
+import k2ddt.core.ExecutionContext
+import k2ddt.physics.dto.PhysicalBody
+import k2ddt.render.dto.Color
+import k2ddt.render.dto.Shape
+import k2ddt.render.dto.Transform
 import org.joml.Math.clamp
 import org.joml.Vector2f
 import java.lang.Float.max
@@ -41,6 +46,7 @@ class CollisionSolver {
                 possibleIntersectionPoints.add(Pair(Vector2f(b0.right, clampY), Vector2f(1f, 0f)))
 
             } else {
+
                 for (i in points.indices) {
 
                     val pointA = Vector2f(points[i])
@@ -98,7 +104,8 @@ class CollisionSolver {
                 }
             }
 
-            /*val ee = ExecutionContext.getInstance()
+            /*
+            val ee = ExecutionContext.getInstance()
             for (p in points) {
                 ee.render(
                     Shape(Shape.Type.CIRCLE, Color(0f, 1f, 0f, 1f)),
@@ -108,7 +115,8 @@ class CollisionSolver {
             ee.render(
                 Shape(Shape.Type.CIRCLE, Color(1f, 0f, 0f, 1f)),
                 Transform(Vector2f(mxi, myi), 0f, Vector2f(10f), 0, centered = true)
-            )*/
+            )
+            */
 
             return collisionVector
         }
@@ -119,17 +127,17 @@ class CollisionSolver {
         }
 
         fun computeStaticCollision(c0: CollisionBox, c1: CollisionBox, v: CollisionVector) {
-            if (!c0.body.isStatic && !c1.body.isStatic)
+            if (c0.body.type != PhysicalBody.Type.STATIC && c1.body.type != PhysicalBody.Type.STATIC)
                 v.distanceDelta /= 2f
 
-            if (!c0.body.isStatic) {
+            if (c0.body.type != PhysicalBody.Type.STATIC) {
                 c0.body.apply {
                     position.add(Vector2f(v.normal).mul(v.distanceDelta))
                     computeVelocity = false
                 }
             }
 
-            if (!c1.body.isStatic) {
+            if (c1.body.type != PhysicalBody.Type.STATIC) {
                 c1.body.apply {
                     position.sub(Vector2f(v.normal).mul(v.distanceDelta))
                     computeVelocity = false
@@ -141,27 +149,33 @@ class CollisionSolver {
 
             var v0 = Vector2f(0f)
             var v1 = Vector2f(0f)
-            if (!c0.body.isStatic && !c1.body.isStatic) {
-                v0 = computeVelocity(
+            if (c0.body.type != PhysicalBody.Type.STATIC && c1.body.type != PhysicalBody.Type.STATIC) {
+                v0 = computeVelocityOld(
+                    c0.body.position,
+                    c1.body.position,
                     c0.body.mass,
                     c1.body.mass,
                     c0.body.velocity,
-                    c1.body.velocity,
-                    c0.body.restituition
+                    c1.body.velocity
                 )
 
-                v1 = computeVelocity(
+                v1 = computeVelocityOld(
+                    c1.body.position,
+                    c0.body.position,
                     c1.body.mass,
                     c0.body.mass,
                     c1.body.velocity,
-                    c0.body.velocity,
-                    c1.body.restituition
+                    c0.body.velocity
                 )
-            } else if (!c0.body.isStatic) {
-                v0 = Vector2f(c0.body.velocity).sub(Vector2f(v.normal).mul(c0.body.velocity.dot(v.normal) * 2))
+            } else if (c0.body.type != PhysicalBody.Type.STATIC) {
+                v0 = Vector2f(c0.body.velocity)
+                    .sub(Vector2f(v.normal)
+                        .mul(c0.body.velocity.dot(v.normal) * 2))
                     .mul(c0.body.restituition)
-            } else if (!c1.body.isStatic) {
-                v1 = Vector2f(c1.body.velocity).sub(Vector2f(v.normal).mul(c1.body.velocity.dot(v.normal) * 2))
+            } else if (c1.body.type != PhysicalBody.Type.STATIC) {
+                v1 = Vector2f(c1.body.velocity)
+                    .sub(Vector2f(v.normal)
+                        .mul(c1.body.velocity.dot(v.normal) * 2))
                     .mul(c1.body.restituition)
             }
 

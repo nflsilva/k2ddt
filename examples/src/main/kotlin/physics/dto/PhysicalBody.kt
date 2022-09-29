@@ -21,14 +21,20 @@ import org.joml.Vector2f
 
 class PhysicalBody(
     val entity: GameEntity,
-    var mass: Float = 0f,
+    val type: Type,
+    var mass: Float = 1f,
     var restituition: Float = 1f,
     var velocity: Vector2f = Vector2f().zero(),
     var acceleration: Vector2f = Vector2f().zero(),
     var oldPosition: Vector2f = entity.position,
-    var isStatic: Boolean = false,
     var computeVelocity: Boolean = true
 ) {
+
+    enum class Type(id: Int) {
+        STATIC(0),
+        VERLET(1),
+        EULER(2)
+    }
 
     val id: String
         get() = entity.uuid
