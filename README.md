@@ -68,7 +68,7 @@ This section should list any major components used in this project.
 
 ### Compiling
 
-The recommended way of compiling 2DGT is with IntelliJ IDEA, using `Gradle`.
+The recommended way of compiling k2ddt is with IntelliJ IDEA, using `Gradle`.
 
 <!-- TODO -->
 
