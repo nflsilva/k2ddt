@@ -3,6 +3,7 @@ package examples.mashup
 import k2ddt.core.ExecutionContext
 import k2ddt.core.GameEntity
 import k2ddt.core.dto.UpdateContext
+import k2ddt.core.render
 import k2ddt.render.dto.*
 import org.joml.Random
 
@@ -42,7 +43,7 @@ class RandomShape(
     }
 
     fun draw() {
-        ee.render(shape, transform)
+        render(shape, transform)
     }
 
 }

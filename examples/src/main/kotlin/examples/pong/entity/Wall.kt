@@ -1,7 +1,9 @@
 package examples.pong.entity
 
-import examples.pong.pe
 import k2ddt.core.GameEntity
+import k2ddt.core.createBoxCollider
+import k2ddt.core.createPhysicalBody
+import k2ddt.core.render
 import k2ddt.physics.dto.PhysicalBody
 import k2ddt.render.dto.Color
 import k2ddt.render.dto.Shape
@@ -27,11 +29,11 @@ class Wall(
 
     init {
         val body = PhysicalBody(this, PhysicalBody.Type.STATIC)
-        pe.createPhysicalBody(body)
-        pe.createBoxCollider(body)
+        createPhysicalBody(body)
+        createBoxCollider(body)
     }
 
     fun draw() {
-        ee.render(Shape(Shape.Type.SQUARE, color), transform)
+        render(Shape(Shape.Type.SQUARE, color), transform)
     }
 }

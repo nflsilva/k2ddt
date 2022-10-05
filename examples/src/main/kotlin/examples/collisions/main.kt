@@ -6,11 +6,9 @@ import examples.collisions.domain.Wall
 import k2ddt.core.ExecutionContext
 import k2ddt.core.ExecutionDelegate
 import k2ddt.core.dto.UpdateContext
-import k2ddt.physics.PhysicsEngine
+import k2ddt.core.getProfileData
 import k2ddt.render.dto.Color
 import k2ddt.tools.Log
-
-val pe = PhysicsEngine()
 
 private class Delegate : ExecutionDelegate() {
 
@@ -39,11 +37,7 @@ private class Delegate : ExecutionDelegate() {
     }
 
     override fun onUpdate(updateContext: UpdateContext) {
-
-        pe.onUpdate()
-
         balls.forEach { it.tick(updateContext) }
-        walls.forEach { it.tick(updateContext) }
         rwalls.forEach { it.tick(updateContext) }
 
         /*
@@ -74,7 +68,7 @@ private class Delegate : ExecutionDelegate() {
     }
 
     private fun printProfiling() {
-        val data = executionContext.getProfileData()
+        val data = getProfileData()
 
         val r = data.timeStamp - lastPrint
 

@@ -1,14 +1,15 @@
 package examples.collisions.domain
 
-import examples.collisions.pe
 import k2ddt.core.GameEntity
-import k2ddt.core.dto.UpdateContext
+import k2ddt.core.createBoxCollider
+import k2ddt.core.createPhysicalBody
+import k2ddt.core.render
 import k2ddt.physics.dto.PhysicalBody
 import k2ddt.render.dto.Color
 import k2ddt.render.dto.Shape
 import k2ddt.render.dto.Transform
 
-open class Wall(
+class Wall(
     x: Float,
     y: Float,
     width: Float,
@@ -28,16 +29,11 @@ open class Wall(
 
     init {
         val body = PhysicalBody(this, PhysicalBody.Type.STATIC, 0f)
-        pe.createPhysicalBody(body)
-        pe.createBoxCollider(body)
-        //transform.rotate(0.25f)
+        createPhysicalBody(body)
+        createBoxCollider(body)
     }
 
-    open fun tick(updateContext: UpdateContext) {
-        //transform.rotate(0.25f * updateContext.elapsedTime)
-    }
-
-    open fun draw() {
-        ee.render(Shape(Shape.Type.SQUARE, color), transform)
+    fun draw() {
+        render(Shape(Shape.Type.SQUARE, color), transform)
     }
 }

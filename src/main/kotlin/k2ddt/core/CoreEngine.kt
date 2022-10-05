@@ -1,6 +1,7 @@
 package k2ddt.core
 
 import k2ddt.core.dto.UpdateContext
+import k2ddt.physics.PhysicsEngine
 import k2ddt.render.RenderEngine
 import k2ddt.sound.SoundEngine
 import k2ddt.tools.Profiler
@@ -11,7 +12,7 @@ class CoreEngine(
     private val renderEngine: RenderEngine,
     private val uiEngine: UIEngine,
     private val soundEngine: SoundEngine,
-    //private val physicsEngine: PhysicsEngine,
+    private val physicsEngine: PhysicsEngine,
     private val delegate: ExecutionDelegate? = null
 ) {
 
@@ -104,9 +105,9 @@ class CoreEngine(
         profiler.end("onUIUpdate")
 
 
-        /*profiler.start("onPhysicsUpdate")
+        profiler.start("onPhysicsUpdate")
         physicsEngine.onUpdate()
-        profiler.end("onPhysicsUpdate")*/
+        profiler.end("onPhysicsUpdate")
 
         profiler.start("[user] onUpdate")
         delegate?.onUpdate(updateContext)

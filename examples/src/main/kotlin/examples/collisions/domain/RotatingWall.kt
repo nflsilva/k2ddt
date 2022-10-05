@@ -1,8 +1,10 @@
 package examples.collisions.domain
 
-import examples.collisions.pe
 import k2ddt.core.GameEntity
+import k2ddt.core.createBoxCollider
+import k2ddt.core.createPhysicalBody
 import k2ddt.core.dto.UpdateContext
+import k2ddt.core.render
 import k2ddt.physics.dto.PhysicalBody
 import k2ddt.render.dto.Color
 import k2ddt.render.dto.Shape
@@ -28,8 +30,8 @@ class RotatingWall(
 
     init {
         val body = PhysicalBody(this, PhysicalBody.Type.STATIC, 0f)
-        pe.createPhysicalBody(body)
-        pe.createBoxCollider(body)
+        createPhysicalBody(body)
+        createBoxCollider(body)
     }
 
     fun tick(updateContext: UpdateContext) {
@@ -37,6 +39,6 @@ class RotatingWall(
     }
 
     fun draw() {
-        ee.render(Shape(Shape.Type.SQUARE, color), transform)
+        render(Shape(Shape.Type.SQUARE, color), transform)
     }
 }

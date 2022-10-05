@@ -1,9 +1,14 @@
 package examples.pong.entity
 
-import examples.pong.pe
 import k2ddt.core.GameEntity
+import k2ddt.core.createCircleCollider
+import k2ddt.core.createPhysicalBody
+import k2ddt.core.render
+import k2ddt.core.applyForce
 import k2ddt.physics.dto.PhysicalBody
-import k2ddt.render.dto.*
+import k2ddt.render.dto.Color
+import k2ddt.render.dto.Shape
+import k2ddt.render.dto.Transform
 import org.joml.Vector2f
 
 class Ball(
@@ -22,18 +27,19 @@ class Ball(
         true
     )
 
+    private var body: PhysicalBody = PhysicalBody(this, PhysicalBody.Type.VERLET)
+
     init {
-        val body = PhysicalBody(this, PhysicalBody.Type.VERLET)
-        pe.createPhysicalBody(body)
-        pe.createCircleCollider(body)
+        createPhysicalBody(body)
+        createCircleCollider(body)
     }
 
     fun draw() {
-        ee.render(Shape(Shape.Type.CIRCLE, color), transform)
+        render(Shape(Shape.Type.CIRCLE, color), transform)
     }
 
     fun applyForce(force: Vector2f) {
-        pe.applyForce(uuid, force)
+        applyForce(body, force)
     }
 
 }

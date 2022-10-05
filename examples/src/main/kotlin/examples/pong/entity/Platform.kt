@@ -1,7 +1,6 @@
 package examples.pong.entity
 
-import examples.pong.pe
-import k2ddt.core.GameEntity
+import k2ddt.core.*
 import k2ddt.core.dto.UpdateContext
 import k2ddt.physics.dto.PhysicalBody
 import k2ddt.render.dto.Color
@@ -33,8 +32,8 @@ class Platform(
 
     init {
         val body = PhysicalBody(this, PhysicalBody.Type.STATIC)
-        pe.createPhysicalBody(body)
-        pe.createBoxCollider(body) { oid -> onCollision(oid) }
+        createPhysicalBody(body)
+        createBoxCollider(body) { oid -> onCollision(oid) }
     }
 
     fun tick(updateContext: UpdateContext) {
@@ -43,7 +42,7 @@ class Platform(
     }
 
     fun draw() {
-        ee.render(Shape(Shape.Type.SQUARE, color), transform)
+        render(Shape(Shape.Type.SQUARE, color), transform)
     }
 
     private fun processInputs(input: InputStateData, elapsedTime: Float) {
@@ -62,6 +61,6 @@ class Platform(
     }
 
     private fun onCollision(other: String) {
-        ee.playSound(pongSound)
+        playSound(pongSound)
     }
 }

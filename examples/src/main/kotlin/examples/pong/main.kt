@@ -4,18 +4,14 @@ import examples.pong.entity.Ball
 import examples.pong.entity.Block
 import examples.pong.entity.Platform
 import examples.pong.entity.Wall
-import k2ddt.core.ExecutionContext
-import k2ddt.core.ExecutionDelegate
+import k2ddt.core.*
 import k2ddt.core.dto.UpdateContext
-import k2ddt.physics.PhysicsEngine
 import k2ddt.render.dto.Color
 import k2ddt.render.dto.Text
 import k2ddt.render.dto.Transform
 import k2ddt.tools.Log
 import org.joml.Random
 import org.joml.Vector2f
-
-val pe = PhysicsEngine()
 
 private class Delegate : ExecutionDelegate() {
 
@@ -36,7 +32,7 @@ private class Delegate : ExecutionDelegate() {
 
     override fun onStart() {
 
-        executionContext.setBackgroundColor(Color(0.0f))
+        setBackgroundColor(Color(0.0f))
 
         ball = Ball((rightLimit - leftLimit) * Random().nextFloat(), bottomLimit + 50f, Color(1f))
         ball.applyForce(Vector2f(0f, 8000f))
@@ -62,7 +58,6 @@ private class Delegate : ExecutionDelegate() {
     }
 
     override fun onUpdate(updateContext: UpdateContext) {
-        pe.onUpdate()
 
         if(isGameOver) return
 
@@ -80,10 +75,10 @@ private class Delegate : ExecutionDelegate() {
 
     override fun onFrame() {
         if(isGameOver) {
-            executionContext.render(Text("Game Over!", 64f, Color(1f)),
+            render(Text("Game Over!", 64f, Color(1f)),
                 Transform((rightLimit-leftLimit) / 2f, (topLimit-bottomLimit) / 2f, 0)
             )
-            executionContext.render(Text(" Final score: $score", 64f, Color(1f)),
+            render(Text(" Final score: $score", 64f, Color(1f)),
                 Transform((rightLimit-leftLimit) / 2f, (topLimit-bottomLimit) / 2f - 64f, 0)
             )
         }
@@ -92,14 +87,14 @@ private class Delegate : ExecutionDelegate() {
             walls.forEach { it.draw() }
             blocks.forEach { it.draw() }
             platform.draw()
-            executionContext.render(Text("Score: $score", 32f, Color(1f)),
+            render(Text("Score: $score", 32f, Color(1f)),
                 Transform(rightLimit + 130f, topLimit - 32f, 0)
             )
         }
     }
 
     private fun printProfiling() {
-        val data = executionContext.getProfileData()
+        val data = getProfileData()
 
         val r = data.timeStamp - lastPrint
 

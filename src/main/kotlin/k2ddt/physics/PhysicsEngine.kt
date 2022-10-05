@@ -35,9 +35,9 @@ class PhysicsEngine() {
         physicalBodies.remove(id)
     }
 
-    fun applyForce(id: String, force: Vector2f) {
-        physicalBodies[id]?.let { body ->
-            body.acceleration.add(force.div(body.mass))
+    fun applyForce(body: PhysicalBody, force: Vector2f) {
+        physicalBodies[body.id]?.let {
+            it.acceleration.add(force.div(it.mass))
         }
     }
 
@@ -54,12 +54,12 @@ class PhysicsEngine() {
     }
 
     //** Collisions **//
-    fun createCircleCollider(body: PhysicalBody, onCollisionCallback: ((other: String) -> Unit)? = null) {
+    fun createCircleCollider(body: PhysicalBody, onCollisionCallback: ((other: String) -> Unit)?) {
         val c = CircleCollisionBox(body, onCollisionCallback)
         collisionBoxes[body.id] = c
     }
 
-    fun createBoxCollider(body: PhysicalBody, onCollisionCallback: ((other: String) -> Unit)? = null) {
+    fun createBoxCollider(body: PhysicalBody, onCollisionCallback: ((other: String) -> Unit)?) {
         val c = RectangleCollisionBox(body, onCollisionCallback)
         collisionBoxes[body.id] = c
     }

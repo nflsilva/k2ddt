@@ -1,7 +1,6 @@
 package examples.pong.entity
 
-import examples.pong.pe
-import k2ddt.core.GameEntity
+import k2ddt.core.*
 import k2ddt.physics.dto.PhysicalBody
 import k2ddt.render.dto.Color
 import k2ddt.render.dto.Shape
@@ -29,26 +28,26 @@ class Block(
         2,
         true
     )
-    private val ttransform = Transform(x, y, 1)
+    private val textTransform = Transform(x, y, 1)
+    private var body: PhysicalBody = PhysicalBody(this, PhysicalBody.Type.STATIC)
 
     init {
-        val body = PhysicalBody(this, PhysicalBody.Type.STATIC)
-        pe.createPhysicalBody(body)
-        pe.createBoxCollider(body) { oid -> onCollision(oid) }
+        createPhysicalBody(body)
+        createBoxCollider(body) { oid -> onCollision(oid) }
     }
 
     fun draw() {
-        ee.render(Shape(Shape.Type.SQUARE, color), transform)
-        ee.render(Text("$health", 32f, Color(0f, 0f, 0f, 1f)), ttransform)
+        render(Shape(Shape.Type.SQUARE, color), transform)
+        render(Text("$health", 32f, Color(0f, 0f, 0f, 1f)), textTransform)
     }
 
     fun remove(){
-        pe.removePhysicalBody(uuid)
+        removePhysicalBody(body)
     }
 
     private fun onCollision(other: String) {
         health -= 1
         isDead = health <= 0
-        ee.playSound(pongSound)
+        playSound(pongSound)
     }
 }

@@ -1,15 +1,12 @@
 package examples.collisions.domain
 
-import examples.collisions.pe
-import k2ddt.core.ExecutionContext
-import k2ddt.core.GameEntity
+import k2ddt.core.*
 import k2ddt.core.dto.UpdateContext
 import k2ddt.physics.dto.PhysicalBody
 import k2ddt.render.dto.*
 import k2ddt.ui.dto.InputStateData
 import org.joml.Vector2f
 import java.text.DecimalFormat
-import java.util.*
 
 class Ball(
     centerX: Float,
@@ -37,11 +34,12 @@ class Ball(
 
     private val dec = DecimalFormat("##.##")
     private var v = Vector2f(0f)
+    private lateinit var body: PhysicalBody
 
     init {
-        val body = PhysicalBody(this, PhysicalBody.Type.VERLET, mass, 1f)
-        pe.createPhysicalBody(body)
-        pe.createCircleCollider(body)
+        body = PhysicalBody(this, PhysicalBody.Type.VERLET, mass, 1f)
+        createPhysicalBody(body)
+        createCircleCollider(body)
     }
 
     fun tick(updateContext: UpdateContext) {
@@ -49,14 +47,14 @@ class Ball(
     }
 
     fun draw() {
-        ee.render(Shape(Shape.Type.CIRCLE, color), transform)
+        render(Shape(Shape.Type.CIRCLE, color), transform)
         //drawVelocity()
         drawForceLine()
     }
 
     private fun drawVelocity() {
         val text = "${dec.format(v.x)} : ${dec.format(v.y)}"
-        ee.render(
+        render(
             Text(text, 16f, Color(0f, 0f, 0f, 1f)),
             Transform(
                 transform.position.x,
@@ -68,12 +66,12 @@ class Ball(
 
     private fun drawForceLine() {
         if (isSelected) {
-            ee.render(line, lineTransform)
+            render(line, lineTransform)
         }
     }
 
-    fun applyForce(force: Vector2f) {
-        pe.applyForce(uuid, force)
+    private fun applyForce(force: Vector2f) {
+        applyForce(body, force)
     }
 
     private fun handleInputs(input: InputStateData) {
