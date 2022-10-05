@@ -1,4 +1,4 @@
-package examples.collisions.domain
+package examples.pong.entity
 
 import k2ddt.core.GameEntity
 import k2ddt.core.createBoxCollider
@@ -28,7 +28,7 @@ class Wall(
     )
 
     init {
-        val body = PhysicalBody(this, PhysicalBody.Type.STATIC, 0f)
+        val body = PhysicalBody(this, PhysicalBody.Type.STATIC)
         createPhysicalBody(body)
         createBoxCollider(body)
     }

@@ -1,7 +1,9 @@
 package examples.mashup
 
 import k2ddt.core.ExecutionContext
+import k2ddt.core.GameEntity
 import k2ddt.core.dto.UpdateContext
+import k2ddt.core.render
 import k2ddt.render.dto.*
 import org.joml.Random
 
@@ -11,12 +13,12 @@ class RandomShape(
     private val size: Float,
     private val color: Color,
     private val layer: Int
-) {
+) : GameEntity() {
 
     private val speed = 250f
     private var direction = if (Random().nextInt(2) == 0) -1 else 1
     private var directionColor = 1
-    val transform = Transform(
+    override val transform = Transform(
         positionX,
         positionY,
         0f,
@@ -40,8 +42,8 @@ class RandomShape(
         }
     }
 
-    fun draw(context: ExecutionContext) {
-        context.render(shape, transform)
+    fun draw() {
+        render(shape, transform)
     }
 
 }

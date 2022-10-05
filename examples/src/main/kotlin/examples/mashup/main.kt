@@ -1,7 +1,6 @@
 package examples.mashup
 
-import k2ddt.core.ExecutionContext
-import k2ddt.core.ExecutionDelegate
+import k2ddt.core.*
 import k2ddt.core.dto.UpdateContext
 import k2ddt.render.dto.*
 import k2ddt.ui.dto.InputStateData
@@ -80,17 +79,17 @@ private class Delegate : ExecutionDelegate() {
         shapes.forEach { it.tick(updateContext) }
 
         if (updateContext.input.scrollY != 0) {
-            executionContext.zoomCamera(updateContext.input.scrollY.toFloat() * 10f)
+            zoomCamera(updateContext.input.scrollY.toFloat() * 10f)
         }
         if (updateContext.input.isKeyPressed(InputStateData.KEY_A)) {
-            executionContext.moveCamera(-10f, 0f)
+            moveCamera(-10f, 0f)
         } else if (updateContext.input.isKeyPressed(InputStateData.KEY_D)) {
-            executionContext.moveCamera(10f, 0f)
+            moveCamera(10f, 0f)
         }
         if (updateContext.input.isKeyPressed(InputStateData.KEY_W)) {
-            executionContext.moveCamera(0f, 10f)
+            moveCamera(0f, 10f)
         } else if (updateContext.input.isKeyPressed(InputStateData.KEY_S)) {
-            executionContext.moveCamera(0f, -10f)
+            moveCamera(0f, -10f)
         }
     }
 
@@ -102,14 +101,14 @@ private class Delegate : ExecutionDelegate() {
                 val s0 = shapes[i - 1]
                 val s1 = shapes[i]
                 val line = Line(
-                    s0.transform.position,
-                    s1.transform.position,
+                    s0.position,
+                    s1.position,
                     Color(1f)
                 )
-                executionContext.render(line, Transform(5))
+                render(line, Transform(5))
             }
         }
-        shapes.forEach { it.draw(executionContext) }
+        shapes.forEach { it.draw() }
 
         val ds = 5
         val size = 128f * 2
@@ -123,11 +122,11 @@ private class Delegate : ExecutionDelegate() {
                 1 + i,
                 true
             )
-            executionContext.render(sprite, t0)
+            render(sprite, t0)
         }
 
         val text = Text("Hello World!", 32f, Color(1f, 0f, 0f, 1f))
-        executionContext.render(
+        render(
             text, Transform(250f, 300f, 0)
         )
 
@@ -137,7 +136,8 @@ private class Delegate : ExecutionDelegate() {
 fun main(args: Array<String>) {
 
     val delegate = Delegate()
-    val ec = ExecutionContext(delegate = delegate)
+    val ec = ExecutionContext.getInstance()
+    ec.setup(delegate = delegate)
     ec.start()
 
     println("Done!")

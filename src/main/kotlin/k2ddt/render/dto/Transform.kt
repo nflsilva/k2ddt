@@ -46,7 +46,9 @@ class Transform(
         centered: Boolean = false
     ) : this(Vector2f(positionX, positionY), rotation, Vector2f(scaleX, scaleY), layer, centered)
 
-    constructor(positionX: Float, positionY: Float,layer: Int) : this(positionX, positionY, 0f, 1f, 1f, layer)
+    constructor(positionX: Float, positionY: Float, layer: Int, centered: Boolean = true) :
+            this(positionX, positionY, 0f, 1f, 1f, layer, centered)
+
     constructor(layer: Int) : this(0f, 0f, 0f, 1f, 1f, layer)
 
     init {
@@ -54,6 +56,9 @@ class Transform(
             throw IllegalArgumentException("Layer should be between 0 and 999")
         }
     }
+
+    val center: Vector2f
+        get() = if(centered) position else Vector2f(position).add(Vector2f(scale.x / 2f, scale.y / 2f))
 
     val left: Float
         get() = position.x - if(centered) scale.x / 2f else 0f
